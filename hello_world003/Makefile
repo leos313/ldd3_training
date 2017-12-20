@@ -1,5 +1,5 @@
 #
-# * Copyright (C) 2001 Alessandro Rubini and Jonathan Corbet
+# Copyright (C) 2001 Alessandro Rubini and Jonathan Corbet
 #
 # Author: Leonardo Suriano
 #
@@ -16,7 +16,7 @@ CC = $(CROSS_COMPILE)gcc
 # If KERNELRELEASE is defined, we've been invoked from the
 # kernel build system and can use its language.
 ifneq ($(KERNELRELEASE),)
-	obj-m := hello_world002.o
+	obj-m := hello_world003.o
 # Otherwise we were called directly from the command
 # line; invoke the kernel build system.
 else

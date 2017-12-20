@@ -1,10 +1,9 @@
-/*
+/* 
+ * Copyright (C) 2001 Alessandro Rubini and Jonathan Corbet
  * Just a copy by the book ldd3 by Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman
  * 
  * 
  */
-
-
 
 #include <linux/init.h>
 #include <linux/module.h>
