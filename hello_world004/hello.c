@@ -66,6 +66,38 @@ int hello_release(struct inode *inode, struct file *filp)
 }
 
 /*
+ * Create a set of file operations for our hello files.
+ * All the functions do nothig
+ */
+
+struct file_operations hello_fops = {
+    .owner =    THIS_MODULE,
+    .open =     hello_open,
+    .release =  hello_release,
+};
+
+
+/*
+ * Set up the char_dev structure for this device.
+ */
+static void hello_setup_cdev(struct hello_dev *dev)
+{
+	int err, devno = MKDEV(hello_major, hello_minor);
+
+	cdev_init(&dev->cdev, &hello_fops);
+	dev->cdev.owner = THIS_MODULE;
+	dev->cdev.ops = &hello_fops;
+	err = cdev_add (&dev->cdev, devno, 1);
+	/* Fail gracefully if need be */
+	if (err)
+		printk(KERN_NOTICE "[LEO] Error %d adding hello", err);
+    
+  printk(KERN_INFO "[LEO] cdev initialized\n");
+}
+
+
+
+/*
  * The init function is used to register the chdeiv allocating dinamically a
  * new major number (if not specified at load/compilation-time)
  */
@@ -76,7 +108,6 @@ static int hello_init(void)
 	  int result =0;
 	  dev_t dev = 0;
 
-	  printk(KERN_INFO "[LEO] default values of \n[LEO] --major : %d \n[LEO] --minor : %d \n", hello_major, hello_minor);
 	  if (hello_major) {
 			  printk(KERN_INFO "[LEO] static allocation of major number (%d)\n",hello_major);
 		    dev = MKDEV(hello_major, hello_minor);
@@ -101,6 +132,8 @@ static int hello_init(void)
         printk(KERN_INFO "[LEO] kmalloc executed succesfully\n");
     }
     memset(hello_devices, 0, hello_nr_devs * sizeof(struct hello_dev));
+    /* Initialize the device. */
+    hello_setup_cdev(hello_devices);
 
     return 0;
 
@@ -121,16 +154,7 @@ static void hello_exit(void)
 
 
 
-/*
- * Create a set of file operations for our hello files.
- * All the functions do nothig
- */
 
-struct file_operations hello_fops = {
-    .owner =    THIS_MODULE,
-    .open =     hello_open,
-    .release =  hello_release,
-};
 
 
 module_init(hello_init);
