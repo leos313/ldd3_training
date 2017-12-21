@@ -1,6 +1,6 @@
 #!/bin/sh
-module="hello_world004"
-device="hello_world004"
+module="hello"
+device="hello"
 
 # invoke rmmod with all arguments we got
 /sbin/rmmod $module $* || exit 1

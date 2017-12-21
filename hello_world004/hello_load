@@ -4,8 +4,9 @@
 # Author    :   Leonardo Suriano <leonardo.suriano@live.it>
 #
 # $Id: scull_load,v 1.4 2004/11/03 06:19:49 rubini Exp $
-module="hello_world004"
-device="hello_world004"
+# $Id: hello_load,v 1.4 2017/12/21 14:45:49 leonardo Exp $
+module="hello"
+device="hello"
 mode="664"
 
 # Group: since distributions do it differently, look for wheel or use staff
@@ -25,8 +26,8 @@ major=$(awk "\$2==\"$module\" {print \$1}" /proc/devices)
 # Remove stale nodes and replace them, then give gid and perms
 # Usually the script is shorter, it's scull that has several devices in it.
 
-rm -f /dev/${device}[0-3]
-mknod /dev/${device}0 c $major 0
-ln -sf ${device}0 /dev/${device}
+rm -f /dev/${device}
+mknod /dev/${device} c $major 0
+ln -sf ${device} /dev/${device}
 chgrp $group /dev/${device}
 chmod $mode  /dev/${device}
