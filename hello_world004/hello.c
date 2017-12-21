@@ -41,13 +41,17 @@ struct hello_dev *hello_devices;	/* allocated in hello_init_module */
 
 int hello_open(struct inode *inode, struct file *filp)
 {
+    struct hello_dev *dev; /* device information */
     printk(KERN_INFO "[LEO] performing 'open' operation\n");
+    dev = container_of(inode->i_cdev, struct hello_dev, cdev);
+    filp->private_data = dev; /* for other methods */\
+
 	  return 0;          /* success */
 }
 
 int hello_release(struct inode *inode, struct file *filp)
 {
-  printk(KERN_INFO "[LEO] performing 'open' operation\n");
+  printk(KERN_INFO "[LEO] performing 'release' operation\n");
     return 0;
 }
 
@@ -60,9 +64,10 @@ int hello_release(struct inode *inode, struct file *filp)
  void hello_cleanup_module(void)
 {
 	  dev_t devno = MKDEV(hello_major, hello_minor);
-    kfree(hello_devices);
-	  unregister_chrdev_region(devno, hello_nr_devs);
-		printk(KERN_INFO "[LEO] chdev unregistered\n");
+    cdev_del(&(hello_devices->cdev));                      /* deleting the cdev as first step */
+    kfree(hello_devices);                                  /* freeing the memory */
+	  unregister_chrdev_region(devno, hello_nr_devs);        /* unregistering device */
+		printk(KERN_INFO "[LEO] cdev deleted, kfree, chdev unregistered\n");
 }
 
 /*
@@ -91,7 +96,7 @@ static void hello_setup_cdev(struct hello_dev *dev)
 	/* Fail gracefully if need be */
 	if (err)
 		printk(KERN_NOTICE "[LEO] Error %d adding hello", err);
-    
+
   printk(KERN_INFO "[LEO] cdev initialized\n");
 }
 
@@ -121,7 +126,7 @@ static int hello_init(void)
 		    printk(KERN_WARNING "[LEO] hello: can't get major %d\n", hello_major);
 		    return result;
     }
-    printk(KERN_INFO "[LEO] values of \n[LEO] --major : %d \n[LEO] --minor : %d \n", hello_major, hello_minor);
+    //printk(KERN_INFO "[LEO] values of \n[LEO] --major : %d \n[LEO] --minor : %d \n", hello_major, hello_minor);
     hello_devices = kmalloc(hello_nr_devs * sizeof(struct hello_dev), GFP_KERNEL);
     if (!hello_devices) {
         result = -ENOMEM;

@@ -7,4 +7,4 @@ device="hello"
 
 # Remove stale nodes
 
-rm -f /dev/${device} /dev/${device}
+rm -f /dev/${device} /dev/${device}[0-3] 
