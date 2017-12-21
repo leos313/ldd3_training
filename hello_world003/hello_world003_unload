@@ -1,0 +1,16 @@
+#!/bin/sh
+module="hello_world003"
+device="hello_world003"
+
+# invoke rmmod with all arguments we got
+/sbin/rmmod $module $* || exit 1
+
+# Remove stale nodes
+
+rm -f /dev/${device} /dev/${device} 
+
+
+
+
+
+
