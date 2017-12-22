@@ -27,7 +27,18 @@ int main() {
 			  printf("file opend\n");
 		}
 
+    /* Read operation */
 
+    long *a;
+    result = read(fd, (void*)a, sizeof(long));
+    if ( result != 0 ){
+        printf("ERROR read operation: %d byte(s) cuold NOT be copied\n");
+        goto fail;
+    }
+    else{
+        printf("read operation executed succesfully\n");
+        printf("a = %ld \n",*a);
+    }
 
     /* Close operation */
     if (close(fd)){

@@ -20,6 +20,7 @@
 #include <linux/fs.h>            /* needed for register_chrdev_region, file_operations */
 #include <linux/cdev.h>          /* cdev definition */
 #include <linux/slab.h>		       /* kmalloc(),kfree() */
+#include <asm/uaccess.h>         /* copy_to copy_from _user */
 
 #include "hello.h"
 
@@ -76,13 +77,24 @@ int hello_release(struct inode *inode, struct file *filp)
 
 ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
-    printk(KERN_INFO "[LEO] performing READ Operation (by doing nothing)");
+    //struct hello_dev *dev = filp->private_data;
+    ssize_t retval = 0;
+    long temp_val=87;
+    if (copy_to_user(buf, (void*)temp_val, count)) {
+        printk(KERN_WARNING "[LEO] hello: can't use copy_to_user \n");
+		    retval = -EFAULT;
+		    goto out;
+	  }
+    printk(KERN_INFO "[LEO] performed READ Operation (by doing nothing)\n");
     return 0;
+
+    out:
+    return retval;
 }
 
 ssize_t hello_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-    printk(KERN_INFO "[LEO] performing WRITE Operation (by doing nothing)");
+    printk(KERN_INFO "[LEO] performing WRITE Operation (by doing nothing)\n");
     return 0;
 }
 
