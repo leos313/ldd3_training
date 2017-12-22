@@ -16,7 +16,7 @@ int main() {
     int fd, result, len;
 
     printf("\n-- TEST hello device_driver--\n");
-    if ((fd = open("/dev/hello", O_RDONLY)) == -1) {
+    if ((fd = open("/dev/hello", O_RDONLY)) < 0 ) {
         perror("1. open failed \n");
         return -1;
     }
