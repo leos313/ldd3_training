@@ -44,7 +44,7 @@ int hello_open(struct inode *inode, struct file *filp)
     struct hello_dev *dev; /* device information */
     printk(KERN_INFO "[LEO] performing 'open' operation\n");
     dev = container_of(inode->i_cdev, struct hello_dev, cdev);
-    filp->private_data = dev; /* for other methods */\
+    filp->private_data = dev; /* for other methods */
 
 	  return 0;          /* success */
 }

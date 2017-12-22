@@ -44,7 +44,7 @@ int hello_open(struct inode *inode, struct file *filp)
     struct hello_dev *dev; /* device information */
     printk(KERN_INFO "[LEO] performing 'open' operation\n");
     dev = container_of(inode->i_cdev, struct hello_dev, cdev);
-    filp->private_data = dev; /* for other methods */\
+    filp->private_data = dev; /* for other methods */
 
 	  return 0;          /* success */
 }
@@ -71,12 +71,30 @@ int hello_release(struct inode *inode, struct file *filp)
 }
 
 /*
+ * Data management: read and write
+ */
+
+ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
+{
+    printk(KERN_INFO "[LEO] performing READ Operation (by doing nothing)");
+    return 0;
+}
+
+ssize_t hello_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
+{
+    printk(KERN_INFO "[LEO] performing WRITE Operation (by doing nothing)");
+    return 0;
+}
+
+/*
  * Create a set of file operations for our hello files.
  * All the functions do nothig
  */
 
 struct file_operations hello_fops = {
     .owner =    THIS_MODULE,
+    .read =     hello_read,
+    .write =    hello_write,
     .open =     hello_open,
     .release =  hello_release,
 };
@@ -167,5 +185,5 @@ module_exit(hello_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Leonardo Suriano <leonardo.suriano@live.it>");
-MODULE_DESCRIPTION("testing pass-parameters");
+MODULE_DESCRIPTION("example of using read and write");
 MODULE_VERSION("1.0");
