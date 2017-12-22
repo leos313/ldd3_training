@@ -5,6 +5,8 @@
  * A simple example of a C program to test some of the
  * operations of the "/dev/hello" device (a.k.a "hello0"),
  *
+ * To compile the file: aarch64-linux-gnu-gcc test_hello.c -o test_hello.elf
+ *
  */
 #include <unistd.h>
 #include <string.h>
@@ -16,20 +18,29 @@ int main() {
     int fd, result, len;
 
     printf("\n-- TEST hello device_driver--\n");
+    /* Open operation */
     if ((fd = open("/dev/hello", O_RDONLY)) < 0 ) {
         perror("1. open failed \n");
-        return -1;
+        goto fail;
     }
 		else{
 			  printf("file opend\n");
 		}
+
+
+
+    /* Close operation */
     if (close(fd)){
 		    perror("1. close failed \n");
+        goto fail;
 		}
 		else{
 		    printf("file closed\n");
 		}
 		printf("-- TEST PASSED --\n");
     return 0;
+    fail:
+    printf("-- TEST FAILED --\n");
+    return -1;
 
 }
