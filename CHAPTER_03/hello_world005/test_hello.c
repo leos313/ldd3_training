@@ -30,6 +30,8 @@ int main() {
     /* Read operation */
 
     char a[1000];
+    char b[1000];
+    //reading a
     printf("string initialized : %s\n",a);
     result = read(fd, (void*)a, 1000);
     if ( result != 0 ){
@@ -41,6 +43,18 @@ int main() {
         printf("read operation executed succesfully\n");
         printf("string read %s \n",a);
     }
+    //reading b
+    result = read(fd, (void*)b, 1001);
+    if ( result != 0 ){
+        printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
+        printf("string read : %s\n",b);
+        goto fail;
+    }
+    else{
+        printf("read operation executed succesfully\n");
+        printf("string read %s \n",b);
+    }
+
 
     /* Close operation */
     if (close(fd)){

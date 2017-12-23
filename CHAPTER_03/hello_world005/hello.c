@@ -80,12 +80,17 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
     //struct hello_dev *dev = filp->private_data;
     ssize_t retval = 0;
     char temp[1000]="MarioBros";
+    if (count > DEVICE_MAX_SIZE){
+        printk(KERN_WARNING "[LEO] hello: trying to read more than possible. Aborting read\n");
+        retval = -EFAULT;
+        goto out;
+    }
     if (copy_to_user(buf, (void*)temp, count)) {
-        printk(KERN_WARNING "[LEO] hello: can't use copy_to_user \n");
+        printk(KERN_WARNING "[LEO] hello: can't use copy_to_user. \n");
 		    retval = -EFAULT;
 		    goto out;
 	  }
-    printk(KERN_INFO "[LEO] performed READ Operation (coping a 'MarioBros' string\n");
+    printk(KERN_INFO "[LEO] performed READ Operation (coping a 'MarioBros' string)\n");
     return 0;
 
     out:
@@ -197,5 +202,5 @@ module_exit(hello_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Leonardo Suriano <leonardo.suriano@live.it>");
-MODULE_DESCRIPTION("example of using read and write");
+MODULE_DESCRIPTION("example of using read");
 MODULE_VERSION("1.0");
