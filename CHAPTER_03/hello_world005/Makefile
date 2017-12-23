@@ -11,7 +11,7 @@
 # export ARCH=arm64
 # export CROSS_COMPILE=aarch64-linux-gnu-
 
-CC = $(CROSS_COMPILE)gcc
+#CC = $(CROSS_COMPILE)gcc
 
 # If KERNELRELEASE is defined, we've been invoked from the
 # kernel build system and can use its language.
