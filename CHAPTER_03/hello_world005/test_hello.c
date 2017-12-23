@@ -5,7 +5,7 @@
  * A simple example of a C program to test some of the
  * operations of the "/dev/hello" device (a.k.a "hello0"),
  *
- * To compile the file: aarch64-linux-gnu-gcc test_hello.c -o test_hello.elf
+ * To compile the file: gcc test_hello.c -o test_hello.elf
  *
  */
 #include <unistd.h>
@@ -29,15 +29,17 @@ int main() {
 
     /* Read operation */
 
-    long *a;
-    result = read(fd, (void*)a, sizeof(long));
+    char a[1000];
+    printf("string initialized : %s\n",a);
+    result = read(fd, (void*)a, 1000);
     if ( result != 0 ){
-        printf("ERROR read operation: %d byte(s) cuold NOT be copied\n");
+        printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
+        printf("string read : %s\n",a);
         goto fail;
     }
     else{
         printf("read operation executed succesfully\n");
-        printf("a = %ld \n",*a);
+        printf("string read %s \n",a);
     }
 
     /* Close operation */

@@ -79,13 +79,13 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
 {
     //struct hello_dev *dev = filp->private_data;
     ssize_t retval = 0;
-    long temp_val=87;
-    if (copy_to_user(buf, (void*)temp_val, count)) {
+    char temp[1000]="MarioBros";
+    if (copy_to_user(buf, (void*)temp, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_to_user \n");
 		    retval = -EFAULT;
 		    goto out;
 	  }
-    printk(KERN_INFO "[LEO] performed READ Operation (by doing nothing)\n");
+    printk(KERN_INFO "[LEO] performed READ Operation (coping a 'MarioBros' string\n");
     return 0;
 
     out:
