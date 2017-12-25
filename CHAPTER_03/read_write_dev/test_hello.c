@@ -12,14 +12,15 @@
 #include <string.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include <errno.h>
 
 int main() {
 
-    int fd, result, len;
+    int fd, result;
 
     printf("\n-- TEST hello device_driver--\n");
     /* Open operation */
-    if ((fd = open("/dev/hello", O_RDONLY)) < 0 ) {
+    if ((fd = open("/dev/hello", O_RDWR)) < 0 ) {
         perror("1. open failed \n");
         goto fail;
     }
@@ -27,28 +28,35 @@ int main() {
 			  printf("file opend\n");
 		}
 
+    /* Write operation */
+
+    char w_b[12];
+    strcpy(w_b,"MarioBros3");
+    result = write(fd, (void*) w_b, 12);
+    if ( result != 0 ){
+        printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
+    }
+    else{
+        printf("write operation executed succesfully\n");
+    }
+
     /* Read operation */
 
     char a[1000];
     char b[1000];
     //reading a
-    printf("string initialized : %s\n",a);
-    result = read(fd, (void*)a, 5);
+    result = read(fd, (void*)a, 3);
     if ( result != 0 ){
-        printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
-        printf("string read : %s\n",a);
-        goto fail;
+        printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
     }
     else{
         printf("read operation executed succesfully\n");
         printf("string read %s \n",a);
     }
     //reading b
-    result = read(fd, (void*)b, 20);
+    result = read(fd, (void*)b, 7);
     if ( result != 0 ){
-        printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
-        printf("string read : %s\n",b);
-        goto fail;
+        printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
     }
     else{
         printf("read operation executed succesfully\n");

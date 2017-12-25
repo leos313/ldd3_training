@@ -68,8 +68,15 @@ int hello_release(struct inode *inode, struct file *filp)
 {
 	  dev_t devno = MKDEV(hello_major, hello_minor);
     cdev_del(&(hello_devices->cdev));
-    kfree(hello_devices -> p_data);                      /* deleting the cdev as first step */
-    kfree(hello_devices);                                  /* freeing the memory */
+    /* freeing the memory */
+    if((hello_devices -> p_data) != 0){
+        kfree(hello_devices -> p_data);
+        printk(KERN_INFO "[LEO] kfree the string-memory\n");
+    }
+    if((hello_devices) != 0){
+        kfree(hello_devices);
+        printk(KERN_INFO "[LEO] kfree hello_devices\n");
+    }
 	  unregister_chrdev_region(devno, hello_nr_devs);        /* unregistering device */
 		printk(KERN_INFO "[LEO] cdev deleted, kfree, chdev unregistered\n");
 }
@@ -84,16 +91,16 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
     ssize_t retval = 0;
     if (count > device_max_size){
         printk(KERN_WARNING "[LEO] hello: trying to read more than possible. Aborting read\n");
-        retval = -EFAULT;
+        retval = -EFBIG;
         goto out;
     }
     if (copy_to_user(buf, (void*)hello_devices -> p_data, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_to_user. \n");
-		    retval = -EFAULT;
+		    retval = -EPERM;
 		    goto out;
 	  }
-    printk(KERN_INFO "[LEO] performed READ Operation (coping a 'MarioBros' string)\n");
-    return 0;
+    printk(KERN_INFO "[LEO] performed READ Operation sucessfully\n");
+    return retval;
 
     out:
     return retval;
@@ -101,8 +108,22 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
 
 ssize_t hello_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-    printk(KERN_INFO "[LEO] performing WRITE Operation (by doing nothing)\n");
-    return 0;
+    int retval = 0;
+    struct hello_dev *dev = filp->private_data;
+    if (count > device_max_size){
+        printk(KERN_WARNING "[LEO] hello: trying to write more than possible. Aborting write\n");
+        retval = -EFBIG;
+        goto out;
+    }
+    if (copy_from_user((void*)hello_devices -> p_data, buf, count)) {
+        printk(KERN_WARNING "[LEO] hello: can't use copy_from_user. \n");
+        retval = -EPERM;
+        goto out;
+    }
+    return retval;
+
+    out:
+    return retval;
 }
 
 /*

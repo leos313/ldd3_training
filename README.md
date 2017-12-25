@@ -13,4 +13,4 @@
         * if you try to read more than 1000 char (DEVICE_MAX_SIZE), it give you a -1.
         * you can read only and alway the string "MarioBros\0". All the other char that you read from the buffer are rubbish.
     * hello_world006 : the same of 005: implementing the same functionality but using kmalloc and kfree.
-    * read_write_dev : in this example, there will be a single chunk of memory that I can read and write. The name of the device istill "hello".
+    * read_write_dev : in this example, there will be a single chunk of memory that I can read and write. The name of the device is still "hello".
