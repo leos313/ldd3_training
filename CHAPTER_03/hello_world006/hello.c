@@ -28,12 +28,10 @@
 int hello_major = 0;
 int hello_minor = 0;
 unsigned int hello_nr_devs = 1;
-int device_max_size = DEVICE_MAX_SIZE;
 
 module_param(hello_major, int, S_IRUGO);
 module_param(hello_minor, int, S_IRUGO);
-//module_param(hello_nr_devs, int, S_IRUGO);
-module_param(device_max_size, int, S_IRUGO);
+module_param(hello_nr_devs, int, S_IRUGO);
 
 struct hello_dev *hello_devices;	/* allocated in hello_init_module */
 
@@ -67,8 +65,7 @@ int hello_release(struct inode *inode, struct file *filp)
  void hello_cleanup_module(void)
 {
 	  dev_t devno = MKDEV(hello_major, hello_minor);
-    cdev_del(&(hello_devices->cdev));
-    kfree(hello_devices -> p_data);                      /* deleting the cdev as first step */
+    cdev_del(&(hello_devices->cdev));                      /* deleting the cdev as first step */
     kfree(hello_devices);                                  /* freeing the memory */
 	  unregister_chrdev_region(devno, hello_nr_devs);        /* unregistering device */
 		printk(KERN_INFO "[LEO] cdev deleted, kfree, chdev unregistered\n");
@@ -82,13 +79,13 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
 {
     //struct hello_dev *dev = filp->private_data;
     ssize_t retval = 0;
-    hello_devices -> p_data = "SuperMarioBros3";
-    if (count > device_max_size){
+    char temp[1000]="MarioBros";
+    if (count > DEVICE_MAX_SIZE){
         printk(KERN_WARNING "[LEO] hello: trying to read more than possible. Aborting read\n");
         retval = -EFAULT;
         goto out;
     }
-    if (copy_to_user(buf, (void*)hello_devices -> p_data, count)) {
+    if (copy_to_user(buf, (void*)temp, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_to_user. \n");
 		    retval = -EFAULT;
 		    goto out;
@@ -133,7 +130,7 @@ static void hello_setup_cdev(struct hello_dev *dev)
 	err = cdev_add (&dev->cdev, devno, 1);
 	/* Fail gracefully if need be */
 	if (err)
-		printk(KERN_WARNING "[LEO] Error %d adding hello cdev_add", err);
+		printk(KERN_NOTICE "[LEO] Error %d adding hello", err);
 
   printk(KERN_INFO "[LEO] cdev initialized\n");
 }
@@ -164,23 +161,18 @@ static int hello_init(void)
 		    printk(KERN_WARNING "[LEO] hello: can't get major %d\n", hello_major);
 		    return result;
     }
-
+    //printk(KERN_INFO "[LEO] values of \n[LEO] --major : %d \n[LEO] --minor : %d \n", hello_major, hello_minor);
     hello_devices = kmalloc(hello_nr_devs * sizeof(struct hello_dev), GFP_KERNEL);
     if (!hello_devices) {
         result = -ENOMEM;
-        printk(KERN_WARNING "[LEO] ERROR kmalloc dev struct\n");
+        printk(KERN_WARNING "[LEO] ERROR kmalloc\n");
         goto fail;  /* Make this more graceful */
     }
-
+    else{
+        printk(KERN_INFO "[LEO] kmalloc executed succesfully\n");
+    }
     memset(hello_devices, 0, hello_nr_devs * sizeof(struct hello_dev));
     /* Initialize the device. */
-
-    hello_devices -> p_data = (char*)kmalloc(device_max_size * sizeof(char), GFP_KERNEL);
-    if (!hello_devices -> p_data) {
-        result = -ENOMEM;
-        printk(KERN_WARNING "[LEO] ERROR kmalloc p_data\n");
-        goto fail;  /* Make this more graceful */
-    }
     hello_setup_cdev(hello_devices);
 
     return 0;
