@@ -10,17 +10,17 @@
 
 
 
-#include <linux/init.h>          /* needed for module_init and exit */
+#include <linux/init.h>            /* needed for module_init and exit */
 #include <linux/module.h>
-#include <linux/moduleparam.h>   /* needed for module_param */
-#include <linux/kernel.h>        /* needed for printk */
-#include <linux/sched.h>         /* needed for current-> */
-#include <linux/types.h>         /* needed for dev_t type */
-#include <linux/kdev_t.h>        /* needed for macros MAJOR, MINOR, MKDEV... */
-#include <linux/fs.h>            /* needed for register_chrdev_region, file_operations */
-#include <linux/cdev.h>          /* cdev definition */
-#include <linux/slab.h>		       /* kmalloc(),kfree() */
-#include <asm/uaccess.h>         /* copy_to copy_from _user */
+#include <linux/moduleparam.h>     /* needed for module_param */
+#include <linux/kernel.h>          /* needed for printk */
+#include <linux/sched.h>           /* needed for current-> */
+#include <linux/types.h>           /* needed for dev_t type */
+#include <linux/kdev_t.h>          /* needed for macros MAJOR, MINOR, MKDEV... */
+#include <linux/fs.h>              /* needed for register_chrdev_region, file_operations */
+#include <linux/cdev.h>            /* cdev definition */
+#include <linux/slab.h>		         /* kmalloc(),kfree() */
+#include <asm/uaccess.h>           /* copy_to copy_from _user */
 
 #include "hello.h"
 
@@ -74,25 +74,40 @@ int hello_release(struct inode *inode, struct file *filp)
 /*
  * Data management: read and write
  */
+char * temp;
 
 ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_pos)
 {
     //struct hello_dev *dev = filp->private_data;
     ssize_t retval = 0;
-    char temp[1000]="MarioBros";
+    //char temp[DEVICE_MAX_SIZE]="MarioBros";
+
+    temp = kmalloc(DEVICE_MAX_SIZE * sizeof(char), GFP_KERNEL);
+    if (!temp) {
+        retval = -ENOMEM;
+        printk(KERN_WARNING "[LEO] ERROR kmalloc dev struct\n");
+        goto out;  /* out with NO kfree */
+    }
+    printk(KERN_INFO "[LEO] 001 the value of the pointer is %p \n", temp);
+    strcpy(temp, "SuperMarioBros3");
+    printk(KERN_INFO "[LEO] 002 the value of the pointer is %p \n", temp);
     if (count > DEVICE_MAX_SIZE){
         printk(KERN_WARNING "[LEO] hello: trying to read more than possible. Aborting read\n");
         retval = -EFAULT;
-        goto out;
+        goto out2; /* out DOING kfree */
     }
-    if (copy_to_user(buf, (void*)temp, count)) {
+    if (copy_to_user(buf, temp, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_to_user. \n");
 		    retval = -EFAULT;
-		    goto out;
+		    goto out2; /* out DOING kfree */
 	  }
     printk(KERN_INFO "[LEO] performed READ Operation (coping a 'MarioBros' string)\n");
+    printk(KERN_INFO "[LEO] 003 the value of the pointer is %p \n", temp);
+    kfree(temp);
     return 0;
 
+    out2:
+    kfree(temp);
     out:
     return retval;
 }

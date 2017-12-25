@@ -33,7 +33,7 @@ int main() {
     char b[1000];
     //reading a
     printf("string initialized : %s\n",a);
-    result = read(fd, (void*)a, 1000);
+    result = read(fd, (void*)a, 15);
     if ( result != 0 ){
         printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
         printf("string read : %s\n",a);
@@ -44,7 +44,7 @@ int main() {
         printf("string read %s \n",a);
     }
     //reading b
-    result = read(fd, (void*)b, 1001);
+    result = read(fd, (void*)b, 20);
     if ( result != 0 ){
         printf("ERROR read operation: %d byte(s) could NOT be copied\n",result);
         printf("string read : %s\n",b);

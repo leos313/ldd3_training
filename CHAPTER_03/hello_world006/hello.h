@@ -1,7 +1,7 @@
 #ifndef _HELLO_H_
 #define _HELLO_H_
 
-#define DEVICE_MAX_SIZE (1000)
+#define DEVICE_MAX_SIZE (20)
 
 
 struct hello_dev {

@@ -1,5 +1,5 @@
 # ldd3 Training
-===
+
 
 
 * CHAPTER_01

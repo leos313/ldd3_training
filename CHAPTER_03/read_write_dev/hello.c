@@ -82,7 +82,6 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
 {
     //struct hello_dev *dev = filp->private_data;
     ssize_t retval = 0;
-    hello_devices -> p_data = "SuperMarioBros3";
     if (count > device_max_size){
         printk(KERN_WARNING "[LEO] hello: trying to read more than possible. Aborting read\n");
         retval = -EFAULT;
