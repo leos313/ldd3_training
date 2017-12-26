@@ -94,14 +94,18 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
         retval = -EFBIG;
         goto out;
     }
+    if (down_interruptible(&(hello_devices->sem_hello))){
+        printk(KERN_WARNING "[LEO] hello: Device busy. Waiting to be executed\n");
+        return -ERESTARTSYS;
+    }
     if (copy_to_user(buf, (void*)hello_devices -> p_data, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_to_user. \n");
 		    retval = -EPERM;
-		    goto out;
+		    goto out_and_Vsem;
 	  }
-    printk(KERN_INFO "[LEO] performed READ Operation sucessfully\n");
-    return retval;
 
+    out_and_Vsem:
+    up(&(hello_devices->sem_hello));
     out:
     return retval;
 }
@@ -115,13 +119,18 @@ ssize_t hello_write(struct file *filp, const char __user *buf, size_t count, lof
         retval = -EFBIG;
         goto out;
     }
+    if (down_interruptible(&(hello_devices->sem_hello))){
+        printk(KERN_WARNING "[LEO] hello: Device busy. Waiting to be executed\n");
+        return -ERESTARTSYS;
+    }
     if (copy_from_user((void*)hello_devices -> p_data, buf, count)) {
         printk(KERN_WARNING "[LEO] hello: can't use copy_from_user. \n");
         retval = -EPERM;
-        goto out;
+        goto out_and_Vsem;
     }
-    return retval;
 
+    out_and_Vsem:
+    up(&(hello_devices->sem_hello));
     out:
     return retval;
 }
@@ -201,6 +210,7 @@ static int hello_init(void)
         printk(KERN_WARNING "[LEO] ERROR kmalloc p_data\n");
         goto fail;  /* Make this more graceful */
     }
+    sema_init(&(hello_devices->sem_hello), 1); /* semaphore initialization */
     hello_setup_cdev(hello_devices);
 
     return 0;

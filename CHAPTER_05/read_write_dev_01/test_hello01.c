@@ -5,7 +5,7 @@
  * A simple example of a C program to test some of the
  * operations of the "/dev/hello" device (a.k.a "hello0"),
  *
- * To compile the file: gcc test_hello.c -o test_hello.elf
+ * To compile the file: gcc test_hello01.c -o test_hello01.elf
  *
  */
 #include <unistd.h>
@@ -31,7 +31,7 @@ int main() {
     /* Write operation */
 
     char w_b[12];
-    strcpy(w_b,"MarioBros3");
+    strcpy(w_b,"test01");
     result = write(fd, (void*) w_b, 12);
     if ( result != 0 ){
         printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
@@ -45,24 +45,22 @@ int main() {
     char a[1000];
     char b[1000];
     //reading a
-    result = read(fd, (void*)a, 3);
-    if ( result != 0 ){
-        printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
+    while(1){
+        result = write(fd, (void*) w_b, 12);
+        if ( result != 0 ){
+            printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
+            goto fail;
+        }
+        //reading b
+        result = read(fd, (void*)b, 7);
+        if ( result != 0 ){
+            printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
+            goto fail;
+        }
+        else{
+            printf("string read %s \n",b);
+        }
     }
-    else{
-        printf("read operation executed succesfully\n");
-        printf("string read %s \n",a);
-    }
-    //reading b
-    result = read(fd, (void*)b, 7);
-    if ( result != 0 ){
-        printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
-    }
-    else{
-        printf("read operation executed succesfully\n");
-        printf("string read %s \n",b);
-    }
-
 
     /* Close operation */
     if (close(fd)){
@@ -75,6 +73,9 @@ int main() {
 		printf("-- TEST PASSED --\n");
     return 0;
     fail:
+    if (close(fd)){
+        perror("1. close failed \n");
+    }
     printf("-- TEST FAILED --\n");
     return -1;
 
