@@ -16,3 +16,4 @@
     * read_write_dev : in this example, there will be a single chunk of memory that I can read and write. The name of the device is still "hello".
 * CHAPTER_04: **Debugging Techniques**
 * CHAPTER_05: **Concurrency and Race Conditions**
+    * read_write_dev_01 : using semaphore as mutex fot the critical session
