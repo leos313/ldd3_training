@@ -95,7 +95,7 @@ ssize_t hello_read(struct file *filp, char __user *buf, size_t count, loff_t *f_
         goto out;
     }
     if (down_interruptible(&(hello_devices->sem_hello))){
-        printk(KERN_WARNING "[LEO] hello: Device busy. Waiting to be executed\n");
+        printk(KERN_WARNING "[LEO] hello: Device was busy. Operation aborted\n");
         return -ERESTARTSYS;
     }
     if (copy_to_user(buf, (void*)hello_devices -> p_data, count)) {
@@ -120,7 +120,7 @@ ssize_t hello_write(struct file *filp, const char __user *buf, size_t count, lof
         goto out;
     }
     if (down_interruptible(&(hello_devices->sem_hello))){
-        printk(KERN_WARNING "[LEO] hello: Device busy. Waiting to be executed\n");
+        printk(KERN_WARNING "[LEO] hello: Device was busy. Operation aborted\n");
         return -ERESTARTSYS;
     }
     if (copy_from_user((void*)hello_devices -> p_data, buf, count)) {

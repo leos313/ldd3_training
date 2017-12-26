@@ -31,7 +31,7 @@ int main() {
    /* Write operation */
 
    char w_b[12];
-   strcpy(w_b,"test_02");
+   strcpy(w_b,"2222222");
    result = write(fd, (void*) w_b, 12);
    if ( result != 0 ){
        printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
