@@ -18,3 +18,5 @@
 * CHAPTER_04: **Debugging Techniques**
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): down_interruptible() and up().
+    * complete: using *wait_for_completion(&comp);*  and *complete(&comp);*
+        * in order to test this module you need to use two thread: launch the test_read.elf in a terminal that will lock the component with *wait_for_completition(&comp)*. The process will wait until another thread (in this case test_write launched in another terminal) frees the semaphore with *complete(&comp)*.
