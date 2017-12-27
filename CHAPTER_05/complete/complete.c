@@ -37,8 +37,9 @@ DECLARE_COMPLETION(comp);
 
 ssize_t complete_read (struct file *filp, char __user *buf, size_t count, loff_t *pos)
 {
+	unsigned long timeout = 1000;
 	printk(KERN_DEBUG "[LEO] process %i (%s) going to sleep\n",current->pid, current->comm);
-	wait_for_completion(&comp);
+	wait_for_completion_interruptible_timeout(&comp,timeout);
 	printk(KERN_DEBUG "[LEO] awoken %i (%s)\n", current->pid, current->comm);
 	return 0; /* EOF */
 }
