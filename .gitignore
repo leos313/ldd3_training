@@ -55,29 +55,3 @@ modules.builtin
 *.swo
 *~
 \#*#
-
-#
-# some specific files
-#
-*.dtb
-
-#
-# Python3 internals
-#
-*.pyc
-/__pycache__
-
-#
-# testing environment
-#
-demos/*/*.hw*/
-demos/*/*.sw*/
-demos/*/*.sim*/
-demos/*/*.hls*/
-demos/*/*.os*/
-
-#
-# Device tree overlays (output products)
-#
-*.dtso
-*.dtbo
