@@ -1,5 +1,21 @@
-# ldd3 Training
+# ldd3 Training -Linux Device Drivers-
 
+## Introduction
+
+I am writing these sample codes for a **personal reason**: I really want to learn how to write (correctly!) Linux device drivers. 
+
+In order to achive this goal, the best source/documentation is, of course, the famous Linux Device Drivers 3rd edition (a.k.a ldd3) by Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman. Reading the book (normally every engineering book) is not enough to deeply understand the topic: the best way is almost always to directly try what you read. This is exactly what I am doing: step by step I try to implement the new concepts.
+
+The folder are devided per chapter and, in every of them, there should be at least one example where the new learned techniques were applied. I am sure the code it is not so clean, can be improved, it is not optimized and so on and so forth: I will try to improve my coding skills with these exercizes.
+
+* If you are reding this document and you want to try to compile and run this examples, please feel free to do it. But keep in mind that **No warranty is attached**; I cannot take responsibility for errors or fitness for use.
+* If you find some errors and you want to help to improve this code, feel free to text me or start issues, pull requests etc.
+* If you think there is something wrong or ambiguous with License please text me and I will fix the errors (the examples are "under construction").
+* If you want to learn how to write device driver, please read the book. You can use the following list of exercizes to implement the new commands and strategies and you can compare with the solution I am proposing. Giving me feedback, we can improve, **both** (or maybe only me), our codes.
+
+
+
+## Examples
 
 
 * CHAPTER_01: **An Introduction to Device Drivers**
