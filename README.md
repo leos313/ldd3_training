@@ -38,6 +38,7 @@ The folders are divided per chapter and, in every one of them, there should be a
             * added make clean
             * added the DEBUG option
         * all the *printk(KERNEL_INFO ...)* were changed to be printed only in the debug mode
+    * proc_filesystem : using files in */proc* to communicate information to the user space (debug information or simply information)
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
     * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
