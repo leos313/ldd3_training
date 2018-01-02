@@ -4,14 +4,14 @@
 
 I am writing these sample codes for a **personal reason**: I really want to learn how to write (correctly!) Linux device drivers.
 
-In order to achieve this goal, the best source/documentation is, of course, the famous Linux Device Drivers 3rd edition (a.k.a ldd3) by Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman. Reading the book (normally every engineering book) is not enough to deeply understand the topic: the best way is almost always to directly try what you read. This is exactly what I am doing: step by step I try to implement the new acquired concepts.
+In order to achieve this goal, the best source/documentation is, of course, the famous [Linux Device Drivers 3rd edition][1] (a.k.a *ldd3*) by Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman. Reading the book (normally every engineering book) is not enough to deeply understand the topic: the best way is almost always to directly try what you read. This is exactly what I am doing: step by step I try to implement the new acquired concepts.
 
 The folders are divided per chapter and, in every one of them, there should be at least one example where the newly learned techniques were applied. I am sure the code it is not so clean, can be improved, it is not optimized and so on and so forth: I will try to improve my coding skills with these exercises.
 
 * If you are reading this document and you want to try to compile and run these examples, please feel free to do it. But keep in mind that **No warranty is attached**; I cannot take responsibility for errors or fitness for use.
 * If you find some errors and you want to help to improve this code, feel free to text me or start issues, pull requests etc.
 * If you think there is something wrong or ambiguous with License please text me and I will fix the errors (the examples are "under construction").
-* If you want to learn how to write a device driver, please read the book. You can use the following list of exercises to implement the new commands and strategies and you can compare with the solution I am proposing. Giving me feedback, we can improve, **both** (or maybe only me), our codes.
+* If you want to learn how to write a device driver, please read the [book][1]. You can use the following list of exercises to implement the new commands and strategies and you can compare with the solution I am proposing. Giving me feedback, we can improve, **both** (or maybe only me), our codes.
 
 
 
@@ -43,3 +43,7 @@ The folders are divided per chapter and, in every one of them, there should be a
     * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
         * in order to test this module you need to use two thread: launch the test_read.elf in a terminal that will lock the component with *wait_for_completion_interruptible_timeout(&comp,timeout)*. The process will wait until another thread (in this case test_write launched in another terminal) frees the semaphore with *complete(&comp)*.
     * spinlocks : TODO
+
+
+
+[1]: https://free-electrons.com/doc/books/ldd3.pdf
