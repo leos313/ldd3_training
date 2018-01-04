@@ -40,12 +40,12 @@ The folders are divided per chapter and, in every one of them, there should be a
         * all the *printk(KERNEL_INFO ...)* were changed to be printed only in the debug mode
     * seq_file_interface : using files in */proc* to communicate information to the user space (debug information or simply information)
         * the idea (and source file) comes from Philippe Reynes under GPL license. It was modified fixing some little problem in order to have a working module for a kernel version > 4.10.0. How to use:
-            * - Set MAX_LINE_PRINTED to a maximun number of line that you wanto to visulize in /proc/LEO_seq_file (5 in this example)
-            * - make
-            * - source proc_load
-            * - cat /proc/LEO_seq_file
-            * - observe the output
-* - source proc_unload
+            * Set MAX_LINE_PRINTED to a maximun number of line that you wanto to visulize in /proc/LEO_seq_file (5 in this example)
+            * make
+            * source proc_load
+            * cat /proc/LEO_seq_file
+            * observe the output
+            * source proc_unload
         * [Manage /proc file with seq_file][2].
         * [The seq_file interface][3] in the linux source code documentation.
 * CHAPTER_05: **Concurrency and Race Conditions**
