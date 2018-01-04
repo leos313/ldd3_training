@@ -28,6 +28,7 @@
 *.symtypes
 *.symvers
 *.order
+*.old
 modules.builtin
 *.elf
 *.bin

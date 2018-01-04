@@ -11,7 +11,7 @@ The folders are divided per chapter and, in every one of them, there should be a
 * If you are reading this document and you want to try to compile and run these examples, please feel free to do it. But keep in mind that **No warranty is attached**; I cannot take responsibility for errors or fitness for use.
 * If you find some errors and you want to help to improve this code, feel free to text me or start issues, pull requests etc.
 * If you think there is something wrong or ambiguous with License please text me and I will fix the errors (the examples are "under construction").
-* If you want to learn how to write a device driver, please read the [book][1]. You can use the following list of exercises to implement the new commands and strategies and you can compare with the solution I am proposing. Giving me feedback, we can improve, **both** (or maybe only me), our codes.
+* If you want to learn how to write a device driver, please read the [book][1]. You can use the following list of exercises to implement the new commands and strategies and you can compare with the solution I am proposing. Giving me feedback, we can improve, **both**, our codes.
 
 
 
@@ -38,7 +38,16 @@ The folders are divided per chapter and, in every one of them, there should be a
             * added make clean
             * added the DEBUG option
         * all the *printk(KERNEL_INFO ...)* were changed to be printed only in the debug mode
-    * proc_filesystem : using files in */proc* to communicate information to the user space (debug information or simply information)
+    * seq_file_interface : using files in */proc* to communicate information to the user space (debug information or simply information)
+        * the idea (and source file) comes from Philippe Reynes under GPL license. It was modified fixing some little problem in order to have a working module for a kernel version > 4.10.0. How to use:
+            * - Set MAX_LINE_PRINTED to a maximun number of line that you wanto to visulize in /proc/LEO_seq_file (5 in this example)
+            * - make
+            * - source proc_load
+            * - cat /proc/LEO_seq_file
+            * - observe the output
+* - source proc_unload
+        * [Manage /proc file with seq_file][2].
+        * [The seq_file interface][3] in the linux source code documentation.
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
     * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
@@ -48,3 +57,5 @@ The folders are divided per chapter and, in every one of them, there should be a
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
+[2]: https://linux.die.net/lkmpg/x861.html
+[3]: https://www.kernel.org/doc/Documentation/filesystems/seq_file.txt

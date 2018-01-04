@@ -17,9 +17,9 @@ EXTRA_CFLAGS += -I$(LDDINC)
 ifneq ($(KERNELRELEASE),)
 # call from kernel build system
 
-#hello-objs := main.o pipe.o access.o
+#proc_seq_file-objs := main.o pipe.o access.o
 
-obj-m	:= hello.o
+obj-m	:= LEO_seq_file.o
 
 else
 
@@ -34,7 +34,7 @@ endif
 
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.elf
+	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.elf *.order *.symvers
 
 depend .depend dep:
 	$(CC) $(EXTRA_CFLAGS) -M *.c > .depend

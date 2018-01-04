@@ -1,6 +1,6 @@
 #!/bin/sh
-module="hello"
-device="hello"
+module="LEO_seq_file"
+device="LEO_seq_file"
 
 # invoke rmmod with all arguments we got
 sudo /sbin/rmmod $module $*
