@@ -20,7 +20,7 @@ The folders are divided per chapter and, in every one of them, there should be a
 
 * CHAPTER_01: **An Introduction to Device Drivers**
     * hello_world001 : first example (just using *printk()* ).
-* CHAPTER_02: **Bulding and Debugging Modules**
+* CHAPTER_02: **Bulding and Running Modules**
     * hello_world002 : passing parameters, trying *current->*, using *MODULE_*
     * kdatasize      : a really simple code that shows the size of the types that I can use in a device driver module. The code comes from Alessandro Rubini and Jonathan Corbet (2001 O'Reilly & Associates) under Dual BSD/GPL license.
 * CHAPTER_03: **Char Drivers**
@@ -49,11 +49,16 @@ The folders are divided per chapter and, in every one of them, there should be a
         * How it works and big part of the source file come from:
             * [Manage /proc file with seq_file][2] and a [pdf version][4] of it.
             * [The seq_file interface][3] in the linux source code documentation.
-        * Note that the value pointed by *pos* is incremented automatically at the end of the function *stop* and it re-start from zero every time you read again the */proc/LEO_seq_file*. Instead, the value *counter* is a global variable (because of *static*) and it holds its value until you remove the module from the kernel.
+        * Note that the value pointed by *pos* is incremented automatically at the end of the function *stop* and it re-start from zero every time you read again the */proc/LEO_seq_file*. You can do everything with the value pointed by *pos* but, when a new iteration starts, it is **ONLY** automatically incremented by 1 by the API. Instead, the value *counter* is a global variable (because of *static*) and it holds its value until you remove the module from the kernel.
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
     * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
         * in order to test this module you need to use two thread: launch the test_read.elf in a terminal that will lock the component with *wait_for_completion_interruptible_timeout(&comp,timeout)*. The process will wait until another thread (in this case test_write launched in another terminal) frees the semaphore with *complete(&comp)*.
+    * read_write_dev_02 : the same of *read_write_dev_01*. Here I am going to add:
+        * the debug macros
+        * updating Makefile
+        * the seq_file_interface (with semaphores in the function *show*)
+        * using API for printing device number
     * spinlocks : TODO
 
 

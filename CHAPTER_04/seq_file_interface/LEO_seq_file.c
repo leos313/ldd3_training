@@ -71,7 +71,11 @@ static void *my_seq_next(struct seq_file *s, void *v, loff_t *pos)
 {
 	unsigned long *tmp_v = (unsigned long *)v;
 	(*tmp_v)++;
-  PDEBUG("[NEXT]: *pos = %llu \n",*pos);
+	PDEBUG("[NEXT] : BEFORE *pos = %llu \n",*pos);
+	// (*pos)++;
+	// (*pos)++;
+	// (*pos)++;
+  PDEBUG("[NEXT] : AFTER  *pos = %llu \n",*pos);
 	return NULL;
 }
 
@@ -93,10 +97,8 @@ static void my_seq_stop(struct seq_file *s, void *v)
 static int my_seq_show(struct seq_file *s, void *v)
 {
 	loff_t *spos = (loff_t *) v;
-
-	//seq_printf(s, "%Ld\n", *spos);
   seq_printf(s, "Hello Leo in proc_seq_file %Ld\n", *spos);
-  PDEBUG("[SHOW]: *v = *spos = %Ld \n",*spos);
+  PDEBUG("[SHOW] : *v = *spos = %Ld \n",*spos);
 	return 0;
 }
 
@@ -117,7 +119,7 @@ static struct seq_operations my_seq_ops = {
  */
 static int my_open(struct inode *inode, struct file *file)
 {
-  PDEBUG("opening operation \n");
+  PDEBUG("opening proc/ file \n");
 	return seq_open(file, &my_seq_ops);
 };
 
