@@ -46,8 +46,10 @@ The folders are divided per chapter and, in every one of them, there should be a
             * cat /proc/LEO_seq_file
             * observe the output
             * source proc_unload
-        * [Manage /proc file with seq_file][2] and a [pdf version][4] of it.
-        * [The seq_file interface][3] in the linux source code documentation.
+        * How it works and big part of the source file come from:
+            * [Manage /proc file with seq_file][2] and a [pdf version][4] of it.
+            * [The seq_file interface][3] in the linux source code documentation.
+        * Note that the value pointed by *pos* is incremented automatically at the end of the function *stop* and it re-start from zero every time you read again the */proc/LEO_seq_file*. Instead, the value *counter* is a global variable (because of *static*) and it holds its value until you remove the module from the kernel.
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
     * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
