@@ -29,8 +29,9 @@
 #include <linux/proc_fs.h>	/* Necessary because we use proc fs */
 #include <linux/seq_file.h>	/* for seq_file */
 
+#include "LEO_seq_file.h" /* debug macros  */
+
 #define PROC_NAME	"LEO_seq_file"
-#define MAX_LINE_PRINTED (5)
 
 MODULE_AUTHOR("Leonardo Suriano <leonardo.suriano@live.it>");
 MODULE_LICENSE("GPL");
@@ -47,7 +48,7 @@ static void *my_seq_start(struct seq_file *s, loff_t *pos)
 	static unsigned long counter = 0;
 
 	/* beginning a new sequence ? */
-  printk (KERN_INFO "*pos = %llu, counter = %lu \n",*pos,counter);
+  PDEBUG("[START]: *pos = %llu, counter = %lu \n",*pos,counter);
 	if ( *pos < MAX_LINE_PRINTED )
 	{
 		/* yes => return a non null value to begin the sequence */
@@ -70,6 +71,7 @@ static void *my_seq_next(struct seq_file *s, void *v, loff_t *pos)
 {
 	unsigned long *tmp_v = (unsigned long *)v;
 	(*tmp_v)++;
+  PDEBUG("[NEXT]: *pos = %llu \n",*pos);
 	return NULL;
 }
 
@@ -80,6 +82,8 @@ static void *my_seq_next(struct seq_file *s, void *v, loff_t *pos)
 static void my_seq_stop(struct seq_file *s, void *v)
 {
 	/* nothing to do, we use a static value in start() */
+  //loff_t *spos = (loff_t *) v;
+  //PDEBUG("[SHOW]: *v = *spos = %Ld \n",*spos);
 }
 
 /**
@@ -92,6 +96,7 @@ static int my_seq_show(struct seq_file *s, void *v)
 
 	//seq_printf(s, "%Ld\n", *spos);
   seq_printf(s, "Hello Leo in proc_seq_file %Ld\n", *spos);
+  PDEBUG("[SHOW]: *v = *spos = %Ld \n",*spos);
 	return 0;
 }
 
@@ -112,6 +117,7 @@ static struct seq_operations my_seq_ops = {
  */
 static int my_open(struct inode *inode, struct file *file)
 {
+  PDEBUG("opening operation \n");
 	return seq_open(file, &my_seq_ops);
 };
 
@@ -135,7 +141,7 @@ static struct file_operations my_file_ops = {
 int init_module(void)
 {
 	struct proc_dir_entry *entry;
-
+  PDEBUG("[init_module] int module function \n");
 	entry = proc_create(PROC_NAME, 0, NULL,&my_file_ops);
   if(entry == NULL)
       return -ENOMEM;

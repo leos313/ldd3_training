@@ -46,7 +46,7 @@ The folders are divided per chapter and, in every one of them, there should be a
             * cat /proc/LEO_seq_file
             * observe the output
             * source proc_unload
-        * [Manage /proc file with seq_file][2].
+        * [Manage /proc file with seq_file][2] and a [pdf version][4] of it.
         * [The seq_file interface][3] in the linux source code documentation.
 * CHAPTER_05: **Concurrency and Race Conditions**
     * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
@@ -59,3 +59,4 @@ The folders are divided per chapter and, in every one of them, there should be a
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
 [2]: https://linux.die.net/lkmpg/x861.html
 [3]: https://www.kernel.org/doc/Documentation/filesystems/seq_file.txt
+[4]: http://www.tldp.org/LDP/lkmpg/2.6/lkmpg.pdf

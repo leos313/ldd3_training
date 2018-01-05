@@ -1,5 +1,5 @@
-#ifndef _HELLO_H_
-#define _HELLO_H_
+#ifndef _SEQ_FILE_H_
+#define _SEQ_FILE_H_
 
 #undef PDEBUG             /* undef it, just in case */
 #ifdef LEO_DEBUG
@@ -17,20 +17,8 @@
 #undef PDEBUGG
 #define PDEBUGG(fmt, args...) /* nothing: it's a placeholder */
 
-
 #define MAX_LINE_PRINTED (5)
 
 
 
-
-struct hello_dev {
-	char *p_data;              /* pointer to the memory allocated */
-	struct cdev cdev;	         /* Char device structure		*/
-};
-
-
-
-
-
-
-#endif /* _HELLO_H_ */
+#endif /* _SEQ_FILE_H_ */
