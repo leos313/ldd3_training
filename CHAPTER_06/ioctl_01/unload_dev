@@ -1,0 +1,10 @@
+#!/bin/sh
+module="ioctl_01"
+device="ioctl_01"
+
+# invoke rmmod with all arguments we got
+sudo /sbin/rmmod $module $*
+
+# Remove stale nodes
+
+sudo rm -f /dev/${device} /dev/${device}[0-3]

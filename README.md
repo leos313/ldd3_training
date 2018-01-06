@@ -18,27 +18,27 @@ The folders are divided per chapter and, in every one of them, there should be a
 ## Examples
 
 
-* CHAPTER_01: **An Introduction to Device Drivers**
-    * hello_world001 : first example (just using *printk()* ).
-* CHAPTER_02: **Bulding and Running Modules**
-    * hello_world002 : passing parameters, trying *current->*, using *MODULE_*
-    * kdatasize      : a really simple code that shows the size of the types that I can use in a device driver module. The code comes from Alessandro Rubini and Jonathan Corbet (2001 O'Reilly & Associates) under Dual BSD/GPL license.
-* CHAPTER_03: **Char Drivers**
-    * hello_world003 : using major and minor number and registering the new device driver as a new module
-    * hello_world004 : I will try to use (1) file_operation, (2) file and (3) inode (chapter 3 pag 49). Implementing open and close operations (so far completely unuseful but working properly)
-    * hello_world005 : Implementing the function read (only a string of 1000*char now)
+1. CHAPTER_01: **An Introduction to Device Drivers**
+    1. hello_world001 : first example (just using *printk()* ).
+2. CHAPTER_02: **Bulding and Running Modules**
+    1. hello_world002 : passing parameters, trying *current->*, using *MODULE_*
+    2. kdatasize      : a really simple code that shows the size of the types that I can use in a device driver module. The code comes from Alessandro Rubini and Jonathan Corbet (2001 O'Reilly & Associates) under Dual BSD/GPL license.
+3. CHAPTER_03: **Char Drivers**
+    1. hello_world003 : using major and minor number and registering the new device driver as a new module
+    2. hello_world004 : I will try to use (1) file_operation, (2) file and (3) inode (chapter 3 pag 49). Implementing open and close operations (so far completely unuseful but working properly)
+    3. hello_world005 : Implementing the function read (only a string of 1000*char now)
         * if you try to read more than 1000 char (*DEVICE_MAX_SIZE*), it give you a -1.
         * you can read only and alway the string "MarioBros\0". All the other char characters that you read from the buffer are rubbish.
-    * hello_world006 : the same of 005: implementing the same functionality but using *kmalloc* and *kfree*.
-    * read_write_dev : in this example, there will be a single chunk of memory that I can read and write. The name of the device is still "hello".
-* CHAPTER_04: **Debugging Techniques**
-    * .config : the kernelconfiguration used in the host where the drivers where tested
-    * debug_01 : using macro to help debugging. The idea and the code come from Alessandro Rubini and Jonathan Corbet (2001 O'Reilly & Associates) and it is explained in the chapter 4 of the book Linux Device Drivers.
+    4. hello_world006 : the same of 005: implementing the same functionality but using *kmalloc* and *kfree*.
+    5. read_write_dev : in this example, there will be a single chunk of memory that I can read and write. The name of the device is still "hello".
+4. CHAPTER_04: **Debugging Techniques**
+    1. .config : the kernelconfiguration used in the host where the drivers where tested
+    2. debug_01 : using macro to help debugging. The idea and the code come from Alessandro Rubini and Jonathan Corbet (2001 O'Reilly & Associates) and it is explained in the chapter 4 of the book Linux Device Drivers.
         * the Makefile was also changed
             * added make clean
             * added the DEBUG option
         * all the *printk(KERNEL_INFO ...)* were changed to be printed only in the debug mode
-    * seq_file_interface : using files in */proc* to communicate information to the user space (debug information or simply information)
+    3. seq_file_interface : using files in */proc* to communicate information to the user space (debug information or simply information)
         * the idea (and source file) comes from Philippe Reynes under GPL license. It was modified fixing some little problem in order to have a working module for a kernel version > 4.10.0. How to use:
             * Set MAX_LINE_PRINTED to a maximun number of line that you wanto to visulize in /proc/LEO_seq_file (5 in this example)
             * make
@@ -50,17 +50,18 @@ The folders are divided per chapter and, in every one of them, there should be a
             * [Manage /proc file with seq_file][2] and a [pdf version][4] of it.
             * [The seq_file interface][3] in the linux source code documentation.
         * Note that the value pointed by *pos* is incremented automatically at the end of the function *stop* and it re-start from zero every time you read again the */proc/LEO_seq_file*. You can do everything with the value pointed by *pos* but, when a new iteration starts, it is **ONLY** automatically incremented by 1 by the API. Instead, the value *counter* is a global variable (because of *static*) and it holds its value until you remove the module from the kernel.
-* CHAPTER_05: **Concurrency and Race Conditions**
-    * read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
-    * complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
+5. CHAPTER_05: **Concurrency and Race Conditions**
+    1. read_write_dev_01 : using semaphore as mutex fot the critical session(read and write sections): *down_interruptible()* and *up()*.
+    2. complete: using *wait_for_completion_interruptible_timeout(&comp,timeout);*  and *complete(&comp);*
         * in order to test this module you need to use two thread: launch the test_read.elf in a terminal that will lock the component with *wait_for_completion_interruptible_timeout(&comp,timeout)*. The process will wait until another thread (in this case test_write launched in another terminal) frees the semaphore with *complete(&comp)*.
-    * read_write_dev_02 : the same of *read_write_dev_01*. Here I am going to add:
+    3. read_write_dev_02 : the same of *read_write_dev_01*. Here I am going to add:
         * the debug macros
         * updating Makefile
         * the seq_file_interface (with semaphores in the function *show*)
         * using API for printing device number
-    * spinlocks : TODO
-
+    4. spinlocks : TODO
+6. CHAPTER_06: **Advanced Char Driver Operations**
+    1. ioctl_01: in this first example I will try to implement some command in a device drivers. The goal will be to change read/write buffer choosing between two. (TO COMPLETE THE IMPLEMENTATION TOMORROW)
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
