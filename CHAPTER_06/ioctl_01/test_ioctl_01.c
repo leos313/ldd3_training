@@ -81,8 +81,22 @@ int main() {
     /* using ioctl */
 
     int value_ioctl = ioctl(fd,SET_FIRST_BUFFER);
-    printf("value_ioctl : %d\n", value_ioctl);
-    printf(" %s\n", strerror(errno));
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
+
+    int buffer_used = ioctl(fd,WHICH_BUFFER);
+    printf("the buffer used: %d\n", buffer_used);
+
+    value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
+
+    buffer_used = ioctl(fd,WHICH_BUFFER);
+    printf("the buffer used: %d\n", buffer_used);
 
     /* Close operation */
     if (close(fd)){

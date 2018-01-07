@@ -27,6 +27,7 @@
  int device_max_size = DEVICE_MAX_SIZE;
  unsigned long long read_times = 0;
  unsigned long long write_times = 0;
+ unsigned char buffer_in_use = 0;
 
  module_param(ioctl_01_major, int, S_IRUGO);
  module_param(ioctl_01_minor, int, S_IRUGO);
@@ -64,7 +65,6 @@
 
  	int err = 0;
  	int retval = 0;
-  PDEBUG(" inside ioctl\n");
  	/*
  	 * extract the type and number bitfields, and don't decode
  	 * wrong cmds: return ENOTTY (inappropriate ioctl) before access_ok()
@@ -72,7 +72,7 @@
  	if (_IOC_TYPE(cmd) != IOCTL_01_IOC_MAGIC) {
     PDEBUG(" _IOC_TYPE(cmd) :      %u\n",_IOC_TYPE(cmd));
     PDEBUG(" IOCTL_01_IOC_MAGIC:   %u\n",IOCTL_01_IOC_MAGIC);
-    printk(KERN_WARNING "[LEO] ioctl_01: _IOC_TYPE(cmd) != IOCTL_01_IOC_MAXNR => false. Aborting ioctl\n");
+    printk(KERN_WARNING "[LEO] ioctl_01: _IOC_TYPE(cmd) != IOCTL_01_IOC_MAGIC => false. Aborting ioctl\n");
     return -ENOTTY;
   }
  	if (_IOC_NR(cmd) > IOCTL_01_IOC_MAXNR) {
@@ -91,22 +91,44 @@
  	else if (_IOC_DIR(cmd) & _IOC_WRITE)
  		err =  !access_ok(VERIFY_READ, (void __user *)arg, _IOC_SIZE(cmd));
  	if (err) return -EFAULT;
-  PDEBUG(" access_ok verified\n");
+
  	switch(cmd) {
     case DEVICE_IOCRESET:
     PDEBUG(" DEVICE_IOCRESET\n");
+    /* using semaphore because of global (shared) variable */
+    if (down_interruptible(&(ioctl_01_devices->sem_ioctl_01))){
+        printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
+        return -ERESTARTSYS;
+    }
+    buffer_in_use = 0; /* Buffers cannot be used */
+    up(&(ioctl_01_devices->sem_ioctl_01));
     break;
     case SET_FIRST_BUFFER:
     PDEBUG(" SET_FIRST_BUFFER\n");
+    /* using semaphore because of global (shared) variable */
+    if (down_interruptible(&(ioctl_01_devices->sem_ioctl_01))){
+        printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
+        return -ERESTARTSYS;
+    }
+    buffer_in_use = FIRST_BUFFER;
+    up(&(ioctl_01_devices->sem_ioctl_01));
     break;
     case SET_SECOND_BUFFER:
+    /* using semaphore because of global (shared) variable */
+    if (down_interruptible(&(ioctl_01_devices->sem_ioctl_01))){
+        printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
+        return -ERESTARTSYS;
+    }
+    buffer_in_use = SECOND_BUFFER;
+    up(&(ioctl_01_devices->sem_ioctl_01));
     PDEBUG(" SET_SECOND_BUFFER\n");
     break;
     case WHICH_BUFFER:
+    return buffer_in_use;
     PDEBUG(" WHICH_BUFFER\n");
     break;
- 	  default:  /* redundant, as cmd was checked against MAXNR */
- 		return -ENOTTY;
+    default:  /* redundant, as cmd was checked against MAXNR */
+    return -ENOTTY;
  	}
  	return retval;
 
@@ -267,11 +289,15 @@
          goto fail;  /* Make this more graceful */
      }
      sema_init(&(ioctl_01_devices->sem_ioctl_01), 1); /* semaphore initialization */
+     /* using semaphore because shared variables ( they are global) */
+     if (down_interruptible(&(ioctl_01_devices->sem_ioctl_01))){
+         printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
+         return -ERESTARTSYS;
+     }
      ioctl_01_setup_cdev(ioctl_01_devices);
-     PDEBUG(" DEVICE_IOCRESET:    %u\n",DEVICE_IOCRESET);
-     PDEBUG(" SET_FIRST_BUFFER:   %u\n",SET_FIRST_BUFFER);
-     PDEBUG(" SET_SECOND_BUFFER:  %u\n",SET_SECOND_BUFFER);
-     PDEBUG(" WHICH_BUFFER:       %lu\n",WHICH_BUFFER);
+     /* set default buffer to use */
+     buffer_in_use = FIRST_BUFFER;
+     up(&(ioctl_01_devices->sem_ioctl_01));
 
      return 0;
 

@@ -61,7 +61,10 @@ The folders are divided per chapter and, in every one of them, there should be a
         * using API for printing device number
     4. spinlocks : TODO
 6. CHAPTER_06: **Advanced Char Driver Operations**
-    1. ioctl_01: in this first example I will try to implement some command in a device drivers. The goal will be to change read/write buffer choosing between two. (TO COMPLETE THE IMPLEMENTATION TOMORROW)
+    1. ioctl_01: in this first example I will try to implement some command in a device drivers. The goal will be to change read/write buffer choosing between two.
+        * command implemented and tested (using semaphore because of shared/global variable)
+        * read info from kernel-space through ioctl(...)
+        * still need update write and read function to use buffers
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf

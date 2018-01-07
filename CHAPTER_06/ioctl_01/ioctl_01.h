@@ -34,6 +34,13 @@ struct ioctl_01_dev {
 };
 
 /*
+ * Name of the buffers
+ */
+
+#define FIRST_BUFFER (1)
+#define SECOND_BUFFER (2)
+
+/*
  * Ioctl definitions
  */
 
