@@ -5,7 +5,7 @@
  * A simple example of a C program to test some of the
  * operations of the "/dev/ioctl_01" device (a.k.a "ioctl_010"),
  *
- * To compile the file: gcc test_ioctl_01.c -o test_ioctl_01.elf
+ * To compile the file: gcc -O -g -DLEO_DEBUG test_ioctl_01.c -o test_ioctl_01.elf
  *
  */
 #include <unistd.h>
@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/ioctl.h>
+#include "test_ioctl_01.h"
 
 /* Use 'k' as magic number */
 #define IOCTL_01_IOC_MAGIC  'T'
@@ -29,6 +30,10 @@ int main() {
     int fd, result;
 
     printf("\n-- TEST ioctl_01 device_driver--\n");
+    PDEBUG(" DEVICE_IOCRESET:    %u\n",DEVICE_IOCRESET);
+    PDEBUG(" SET_FIRST_BUFFER:   %u\n",SET_FIRST_BUFFER);
+    PDEBUG(" SET_SECOND_BUFFER:  %u\n",SET_SECOND_BUFFER);
+    PDEBUG(" WHICH_BUFFER:       %lu\n",WHICH_BUFFER);
     /* Open operation */
     if ((fd = open("/dev/ioctl_01", O_RDWR)) < 0 ) {
         perror("1. open failed \n");
@@ -75,7 +80,7 @@ int main() {
 
     /* using ioctl */
 
-    int value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    int value_ioctl = ioctl(fd,SET_FIRST_BUFFER);
     printf("value_ioctl : %d\n", value_ioctl);
     printf(" %s\n", strerror(errno));
 

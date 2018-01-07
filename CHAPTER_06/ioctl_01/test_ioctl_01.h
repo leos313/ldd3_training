@@ -24,14 +24,6 @@
 #undef PDEBUGG
 #define PDEBUGG(fmt, args...) /* nothing: it's a placeholder */
 
-#define DEVICE_MAX_SIZE (20)
-
-struct ioctl_01_dev {
-	char *p_data_01;                 /* first memory buffer */
-	char *p_data_02;                 /* second memory buffer */
-	struct semaphore sem_ioctl_01;   /* semaphore for the struct hello */
-	struct cdev cdev;	               /* Char device structure		*/
-};
 
 /*
  * Ioctl definitions

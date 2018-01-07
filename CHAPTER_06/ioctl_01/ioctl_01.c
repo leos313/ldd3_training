@@ -18,7 +18,6 @@
  #include <linux/cdev.h>          /* cdev definition */
  #include <linux/slab.h>		       /* kmalloc(),kfree() */
  #include <asm/uaccess.h>         /* copy_to copy_from _user */
- #include <linux/ioctl.h>
 
  #include "ioctl_01.h"
 
@@ -65,13 +64,21 @@
 
  	int err = 0;
  	int retval = 0;
-
+  PDEBUG(" inside ioctl\n");
  	/*
  	 * extract the type and number bitfields, and don't decode
  	 * wrong cmds: return ENOTTY (inappropriate ioctl) before access_ok()
  	 */
- 	if (_IOC_TYPE(cmd) != IOCTL_01_IOC_MAXNR) return -ENOTTY;
- 	if (_IOC_NR(cmd) > IOCTL_01_IOC_MAXNR) return -ENOTTY;
+ 	if (_IOC_TYPE(cmd) != IOCTL_01_IOC_MAGIC) {
+    PDEBUG(" _IOC_TYPE(cmd) :      %u\n",_IOC_TYPE(cmd));
+    PDEBUG(" IOCTL_01_IOC_MAGIC:   %u\n",IOCTL_01_IOC_MAGIC);
+    printk(KERN_WARNING "[LEO] ioctl_01: _IOC_TYPE(cmd) != IOCTL_01_IOC_MAXNR => false. Aborting ioctl\n");
+    return -ENOTTY;
+  }
+ 	if (_IOC_NR(cmd) > IOCTL_01_IOC_MAXNR) {
+    printk(KERN_WARNING "[LEO] ioctl_01: _IOC_NR(cmd) > IOCTL_01_IOC_MAXNR => false. Aborting ioctl\n");
+    return -ENOTTY;
+  }
 
  	/*
  	 * the direction is a bitmask, and VERIFY_WRITE catches R/W
@@ -84,7 +91,7 @@
  	else if (_IOC_DIR(cmd) & _IOC_WRITE)
  		err =  !access_ok(VERIFY_READ, (void __user *)arg, _IOC_SIZE(cmd));
  	if (err) return -EFAULT;
-
+  PDEBUG(" access_ok verified\n");
  	switch(cmd) {
     case DEVICE_IOCRESET:
     PDEBUG(" DEVICE_IOCRESET\n");
@@ -261,6 +268,10 @@
      }
      sema_init(&(ioctl_01_devices->sem_ioctl_01), 1); /* semaphore initialization */
      ioctl_01_setup_cdev(ioctl_01_devices);
+     PDEBUG(" DEVICE_IOCRESET:    %u\n",DEVICE_IOCRESET);
+     PDEBUG(" SET_FIRST_BUFFER:   %u\n",SET_FIRST_BUFFER);
+     PDEBUG(" SET_SECOND_BUFFER:  %u\n",SET_SECOND_BUFFER);
+     PDEBUG(" WHICH_BUFFER:       %lu\n",WHICH_BUFFER);
 
      return 0;
 
