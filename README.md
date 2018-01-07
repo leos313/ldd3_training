@@ -64,7 +64,9 @@ The folders are divided per chapter and, in every one of them, there should be a
     1. ioctl_01: in this first example I will try to implement some command in a device drivers. The goal will be to change read/write buffer choosing between two.
         * command implemented and tested (using semaphore because of shared/global variable)
         * read info from kernel-space through ioctl(...)
-        * still need update write and read function to use buffers
+        * you can use two different buffer to store your data-string
+        * the test_ioctl_01.c read and write, alternatively, from the two buffer. When NO buffers are set up, read and write are not permitted (see the kernel messages with *dmesg*).
+        * a single semaphore was used for both buffers (this can have an impact on the performance). It is possible to design a module that uses two semaphores/mutexs: one for each buffers, making them independend from each other.
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf

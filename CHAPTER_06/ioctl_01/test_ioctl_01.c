@@ -43,7 +43,13 @@ int main() {
 			  printf("file opend\n");
 		}
 
-    /* Write operation */
+    /* Write first buffer */
+
+    int value_ioctl = ioctl(fd,SET_FIRST_BUFFER);
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
 
     char w_b[12];
     strcpy(w_b,"MarioBros3");
@@ -55,12 +61,35 @@ int main() {
         printf("write operation executed succesfully\n");
     }
 
-    /* Read operation */
+    /* Write second buffer */
 
+    value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
+
+    strcpy(w_b,"Luigi");
+    result = write(fd, (void*) w_b, 12);
+    if ( result != 0 ){
+        printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
+    }
+    else{
+        printf("write operation executed succesfully\n");
+    }
+
+
+    /* Read first buffer */
     char a[1000];
     char b[1000];
-    //reading a
-    result = read(fd, (void*)a, 3);
+
+    value_ioctl = ioctl(fd,SET_FIRST_BUFFER);
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
+
+    result = read(fd, (void*)a, 5);
     if ( result != 0 ){
         printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
     }
@@ -68,7 +97,16 @@ int main() {
         printf("read operation executed succesfully\n");
         printf("string read %s \n",a);
     }
-    //reading b
+
+
+    //reading second buffer
+
+    value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    if (value_ioctl < 0){
+      printf("value_ioctl : %d\n", value_ioctl);
+      printf(" %s\n", strerror(errno));
+    }
+
     result = read(fd, (void*)b, 7);
     if ( result != 0 ){
         printf("Oh dear, something went wrong with read()! %s\n", strerror(errno));
@@ -78,25 +116,34 @@ int main() {
         printf("string read %s \n",b);
     }
 
-    /* using ioctl */
-
-    int value_ioctl = ioctl(fd,SET_FIRST_BUFFER);
-    if (value_ioctl < 0){
-      printf("value_ioctl : %d\n", value_ioctl);
-      printf(" %s\n", strerror(errno));
-    }
+    /* querying which one */
 
     int buffer_used = ioctl(fd,WHICH_BUFFER);
     printf("the buffer used: %d\n", buffer_used);
 
-    value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    value_ioctl = ioctl(fd,DEVICE_IOCRESET);
     if (value_ioctl < 0){
       printf("value_ioctl : %d\n", value_ioctl);
       printf(" %s\n", strerror(errno));
     }
 
+
+    /* trying to read when no buffer is set up*/
+
     buffer_used = ioctl(fd,WHICH_BUFFER);
     printf("the buffer used: %d\n", buffer_used);
+
+    //reading b -> nothing to read when no buffers are set up
+    result = read(fd, (void*)b, 7);
+    if ( result != 0 ){
+        printf("Oh dear, something went wrong with read()! \n%s\n", strerror(errno));
+    }
+    else{
+        printf("read operation executed succesfully\n");
+        printf("string read %s \n",b);
+    }
+
+
 
     /* Close operation */
     if (close(fd)){

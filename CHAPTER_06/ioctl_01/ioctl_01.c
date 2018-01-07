@@ -143,6 +143,7 @@
  {
      //struct ioctl_01_dev *dev = filp->private_data;
      ssize_t retval = 0;
+     char *p_data_temp;
      if (count > device_max_size){
          printk(KERN_WARNING "[LEO] ioctl_01: trying to read more than possible. Aborting read\n");
          retval = -EFBIG;
@@ -152,8 +153,20 @@
          printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
          return -ERESTARTSYS;
      }
-     if (copy_to_user(buf, (void*)ioctl_01_devices -> p_data_01, count)) {
-         printk(KERN_WARNING "[LEO] ioctl_01: can't use copy_to_user. \n");
+     switch(buffer_in_use){
+       case FIRST_BUFFER:
+       p_data_temp=ioctl_01_devices -> p_data_01;
+       break;
+       case SECOND_BUFFER:
+       p_data_temp=ioctl_01_devices -> p_data_02;
+       break;
+       default:
+       printk(KERN_WARNING "[LEO] ioctl_01: no valid buffer in use. \n");
+       up(&(ioctl_01_devices->sem_ioctl_01));
+       return -EAGAIN; //to find the right value to return
+     }
+     if (copy_to_user(buf, (void*)p_data_temp, count)) {
+        printk(KERN_WARNING "[LEO] ioctl_01: can't use copy_to_user. \n");
  		    retval = -EPERM;
  		    goto out_and_Vsem;
  	  }
@@ -168,6 +181,7 @@
  ssize_t ioctl_01_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
  {
      int retval = 0;
+     char *p_data_temp;
      //struct ioctl_01_dev *dev = filp->private_data;
      if (count > device_max_size){
          printk(KERN_WARNING "[LEO] ioctl_01: trying to write more than possible. Aborting write\n");
@@ -178,7 +192,19 @@
          printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
          return -ERESTARTSYS;
      }
-     if (copy_from_user((void*)ioctl_01_devices -> p_data_01, buf, count)) {
+     switch(buffer_in_use){
+       case FIRST_BUFFER:
+       p_data_temp=ioctl_01_devices -> p_data_01;
+       break;
+       case SECOND_BUFFER:
+       p_data_temp=ioctl_01_devices -> p_data_02;
+       break;
+       default:
+       printk(KERN_WARNING "[LEO] ioctl_01: no valid buffer in use. \n");
+       up(&(ioctl_01_devices->sem_ioctl_01));
+       return -EAGAIN; //to find the right value to return
+     }
+     if (copy_from_user((void*)p_data_temp, buf, count)) {
          printk(KERN_WARNING "[LEO] ioctl_01: can't use copy_from_user. \n");
          retval = -EPERM;
          goto out_and_Vsem;
@@ -286,6 +312,12 @@
      if (!ioctl_01_devices -> p_data_01) {
          result = -ENOMEM;
          printk(KERN_WARNING "[LEO] ioctl_01: ERROR kmalloc p_data_01\n");
+         goto fail;  /* Make this more graceful */
+     }
+     ioctl_01_devices -> p_data_02 = (char*)kmalloc(device_max_size * sizeof(char), GFP_KERNEL);
+     if (!ioctl_01_devices -> p_data_02) {
+         result = -ENOMEM;
+         printk(KERN_WARNING "[LEO] ioctl_01: ERROR kmalloc p_data_02\n");
          goto fail;  /* Make this more graceful */
      }
      sema_init(&(ioctl_01_devices->sem_ioctl_01), 1); /* semaphore initialization */
