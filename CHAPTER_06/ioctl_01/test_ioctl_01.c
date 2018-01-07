@@ -13,6 +13,16 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/ioctl.h>
+
+/* Use 'k' as magic number */
+#define IOCTL_01_IOC_MAGIC  'T'
+/* Please use a different 8-bit number in your code */
+
+#define DEVICE_IOCRESET    _IO(IOCTL_01_IOC_MAGIC, 0)
+#define SET_FIRST_BUFFER   _IO(IOCTL_01_IOC_MAGIC, 1)
+#define SET_SECOND_BUFFER  _IO(IOCTL_01_IOC_MAGIC, 2)
+#define WHICH_BUFFER       _IOR(IOCTL_01_IOC_MAGIC, 3, int)
 
 int main() {
 
@@ -63,6 +73,11 @@ int main() {
         printf("string read %s \n",b);
     }
 
+    /* using ioctl */
+
+    int value_ioctl = ioctl(fd,SET_SECOND_BUFFER);
+    printf("value_ioctl : %d\n", value_ioctl);
+    printf(" %s\n", strerror(errno));
 
     /* Close operation */
     if (close(fd)){

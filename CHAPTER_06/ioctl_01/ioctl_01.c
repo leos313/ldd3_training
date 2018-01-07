@@ -18,6 +18,7 @@
  #include <linux/cdev.h>          /* cdev definition */
  #include <linux/slab.h>		       /* kmalloc(),kfree() */
  #include <asm/uaccess.h>         /* copy_to copy_from _user */
+ #include <linux/ioctl.h>
 
  #include "ioctl_01.h"
 
@@ -56,6 +57,56 @@
  }
 
  /*
+  * The ioctl() implementation
+  */
+
+ long ioctl_01_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+ {
+
+ 	int err = 0;
+ 	int retval = 0;
+
+ 	/*
+ 	 * extract the type and number bitfields, and don't decode
+ 	 * wrong cmds: return ENOTTY (inappropriate ioctl) before access_ok()
+ 	 */
+ 	if (_IOC_TYPE(cmd) != IOCTL_01_IOC_MAXNR) return -ENOTTY;
+ 	if (_IOC_NR(cmd) > IOCTL_01_IOC_MAXNR) return -ENOTTY;
+
+ 	/*
+ 	 * the direction is a bitmask, and VERIFY_WRITE catches R/W
+ 	 * transfers. `Type' is user-oriented, while
+ 	 * access_ok is kernel-oriented, so the concept of "read" and
+ 	 * "write" is reversed
+ 	 */
+ 	if (_IOC_DIR(cmd) & _IOC_READ)
+ 		err = !access_ok(VERIFY_WRITE, (void __user *)arg, _IOC_SIZE(cmd));
+ 	else if (_IOC_DIR(cmd) & _IOC_WRITE)
+ 		err =  !access_ok(VERIFY_READ, (void __user *)arg, _IOC_SIZE(cmd));
+ 	if (err) return -EFAULT;
+
+ 	switch(cmd) {
+    case DEVICE_IOCRESET:
+    PDEBUG(" DEVICE_IOCRESET\n");
+    break;
+    case SET_FIRST_BUFFER:
+    PDEBUG(" SET_FIRST_BUFFER\n");
+    break;
+    case SET_SECOND_BUFFER:
+    PDEBUG(" SET_SECOND_BUFFER\n");
+    break;
+    case WHICH_BUFFER:
+    PDEBUG(" WHICH_BUFFER\n");
+    break;
+ 	  default:  /* redundant, as cmd was checked against MAXNR */
+ 		return -ENOTTY;
+ 	}
+ 	return retval;
+
+ }
+
+
+ /*
   * Data management: read and write
   */
 
@@ -72,7 +123,7 @@
          printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
          return -ERESTARTSYS;
      }
-     if (copy_to_user(buf, (void*)ioctl_01_devices -> p_data, count)) {
+     if (copy_to_user(buf, (void*)ioctl_01_devices -> p_data_01, count)) {
          printk(KERN_WARNING "[LEO] ioctl_01: can't use copy_to_user. \n");
  		    retval = -EPERM;
  		    goto out_and_Vsem;
@@ -98,7 +149,7 @@
          printk(KERN_WARNING "[LEO] ioctl_01: Device was busy. Operation aborted\n");
          return -ERESTARTSYS;
      }
-     if (copy_from_user((void*)ioctl_01_devices -> p_data, buf, count)) {
+     if (copy_from_user((void*)ioctl_01_devices -> p_data_01, buf, count)) {
          printk(KERN_WARNING "[LEO] ioctl_01: can't use copy_from_user. \n");
          retval = -EPERM;
          goto out_and_Vsem;
@@ -121,6 +172,7 @@
      .owner =    THIS_MODULE,
      .read =     ioctl_01_read,
      .write =    ioctl_01_write,
+     .unlocked_ioctl = ioctl_01_ioctl,
      .open =     ioctl_01_open,
      .release =  ioctl_01_release,
  };
@@ -136,8 +188,8 @@
  	  dev_t devno = MKDEV(ioctl_01_major, ioctl_01_minor);
      cdev_del(&(ioctl_01_devices->cdev));
      /* freeing the memory */
-     if((ioctl_01_devices -> p_data) != 0){
-         kfree(ioctl_01_devices -> p_data);
+     if((ioctl_01_devices -> p_data_01) != 0){
+         kfree(ioctl_01_devices -> p_data_01);
          PDEBUG(" kfree the string-memory\n");
      }
      if((ioctl_01_devices) != 0){
@@ -201,10 +253,10 @@
      memset(ioctl_01_devices, 0, ioctl_01_nr_devs * sizeof(struct ioctl_01_dev));
      /* Initialize the device. */
 
-     ioctl_01_devices -> p_data = (char*)kmalloc(device_max_size * sizeof(char), GFP_KERNEL);
-     if (!ioctl_01_devices -> p_data) {
+     ioctl_01_devices -> p_data_01 = (char*)kmalloc(device_max_size * sizeof(char), GFP_KERNEL);
+     if (!ioctl_01_devices -> p_data_01) {
          result = -ENOMEM;
-         printk(KERN_WARNING "[LEO] ioctl_01: ERROR kmalloc p_data\n");
+         printk(KERN_WARNING "[LEO] ioctl_01: ERROR kmalloc p_data_01\n");
          goto fail;  /* Make this more graceful */
      }
      sema_init(&(ioctl_01_devices->sem_ioctl_01), 1); /* semaphore initialization */
