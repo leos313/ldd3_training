@@ -67,7 +67,8 @@ The folders are divided per chapter and, in every one of them, there should be a
         * you can use two different buffer to store your data-string
         * the test_ioctl_01.c read and write, alternatively, from the two buffer. When NO buffers are set up, read and write are not permitted (see the kernel messages with *dmesg*).
         * a single semaphore was used for both buffers (this can have an impact on the performance). It is possible to design a module that uses two semaphores/mutexs: one for each buffers, making them independend from each other.
-
+7. DEVICE_TREE: *Managing Device Tree*
+    1. devicetree_helloworld01: in this example I use the same source file of CHAPTER_03 -> hello_world003 where I add some basic function to read the device tree (in this case for the Pynq board) and print the address of the gpio found.
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
 [2]: https://linux.die.net/lkmpg/x861.html
