@@ -69,6 +69,9 @@ The folders are divided per chapter and, in every one of them, there should be a
         * a single semaphore was used for both buffers (this can have an impact on the performance). It is possible to design a module that uses two semaphores/mutexs: one for each buffers, making them independend from each other.
 7. DEVICE_TREE: *Managing Device Tree*
     1. devicetree_helloworld01: in this example I use the same source file of CHAPTER_03 -> hello_world003 where I add some basic function to read the device tree (in this case for the Pynq board) and print the address of the gpio found.
+8. utilities:
+    1. swapping_bitstream: simple program to swap bitstream (the function was originally written by MORA and modify by me for this project)
+    2. test_gpio_userspace: using mmap I can access directly to the hardware (with NO device driver). Within the C-file there are the right command to turn on/off the Leds on Pynq board and to read the button/switch of the board. It assumes that you have created a Vivado project with GPIO with the right address map.
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
 [2]: https://linux.die.net/lkmpg/x861.html

@@ -13,6 +13,7 @@
 .*
 *.o
 *.o.*
+*.out
 *.a
 *.s
 *.ko.unsigned
