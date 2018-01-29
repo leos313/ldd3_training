@@ -74,7 +74,7 @@ The folders are divided per chapter and, in every one of them, there should be a
         * TODO: to use ioctl(...) to turn the led on and off design the driver in a proper manner.
 8. utilities:
     1. swapping_bitstream: simple program to swap bitstream (the function was originally written by MORA and modify by me for this project)
-    2. test_gpio_userspace: using mmap I can access directly to the hardware (with NO device driver). Within the C-file there are the right command to turn on/off the Leds on Pynq board and to read the button/switch of the board. It assumes that you have created a Vivado project with GPIO with the right address map. See the (blog's page)[http://fpga.org/2013/05/28/how-to-design-and-access-a-memory-mapped-device-part-two/]
+    2. test_gpio_userspace: using mmap I can access directly to the hardware (with NO device driver). Within the C-file there are the right command to turn on/off the Leds on Pynq board and to read the button/switch of the board. It assumes that you have created a Vivado project with GPIO with the right address map. See the [blog's page](http://fpga.org/2013/05/28/how-to-design-and-access-a-memory-mapped-device-part-two/)
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
