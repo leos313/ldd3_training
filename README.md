@@ -69,8 +69,9 @@ The folders are divided per chapter and, in every one of them, there should be a
         * a single semaphore was used for both buffers (this can have an impact on the performance). It is possible to design a module that uses two semaphores/mutexs: one for each buffers, making them independend from each other.
 7. DEVICE_TREE: *Managing Device Tree*
     1. devicetree_helloworld01: in this example I use the same source file of CHAPTER_03 -> hello_world003 where I add some basic function to read the device tree (in this case for the Pynq board) and print the address of the gpio found.
-    2. *managing_leds*:
-        * in [this link](http://elixir.free-electrons.com/linux/latest/source/include/linux/ioport.h), all the functions to manage the "hw resources" are defined. 
+    2. *managing_leds*: 
+        * this driver turns on the first 3 leds (corrisponding to the binary value 7 -> 0b0111) and uses ioremap and iowrite32(...)
+        * TODO: to use ioctl(...) to turn the led on and off design the driver in a proper manner.
 8. utilities:
     1. swapping_bitstream: simple program to swap bitstream (the function was originally written by MORA and modify by me for this project)
     2. test_gpio_userspace: using mmap I can access directly to the hardware (with NO device driver). Within the C-file there are the right command to turn on/off the Leds on Pynq board and to read the button/switch of the board. It assumes that you have created a Vivado project with GPIO with the right address map. See the (blog's page)[http://fpga.org/2013/05/28/how-to-design-and-access-a-memory-mapped-device-part-two/]

@@ -26,6 +26,17 @@
 
 #define DRIVER_NAME "LED_01"
 
+/* Hardware information */
+
+#define XGPIO_DATA_OFFSET	  0x0    /* < Data register for 1st channel      */
+#define XGPIO_TRI_OFFSET	  0x4    /* < I/O direction reg for 1st channel*/
+#define XGPIO_DATA2_OFFSET	0x8    /* < Data register for 2nd channel*/
+#define XGPIO_TRI2_OFFSET	  0xC    /* < I/O direction reg for 2nd channel*/
+#define XGPIO_GIE_OFFSET	  0x11C  /* < Glogal interrupt enable register*/
+#define XGPIO_ISR_OFFSET	  0x120  /* < Interrupt status register*/
+#define XGPIO_IER_OFFSET	  0x128  /* < Interrupt enable register*/
+
+
 struct LED_01_dev {
   struct resource res;           /* to store platform info */
 	struct semaphore sem_LED_01;   /* semaphore for the struct hello */

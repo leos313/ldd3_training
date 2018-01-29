@@ -5,6 +5,16 @@
  *
  * Description: TODO
  *
+ * BE CAREFULL TO SET THE DIRECTON:
+ * #define XGPIO_DATA_OFFSET	0x0   < Data register for 1st channel
+ * #define XGPIO_TRI_OFFSET	0x4   < I/O direction reg for 1st channel
+ * #define XGPIO_DATA2_OFFSET	0x8   < Data register for 2nd channel
+ * #define XGPIO_TRI2_OFFSET	0xC   < I/O direction reg for 2nd channel
+ *
+ * #define XGPIO_GIE_OFFSET	0x11C < Glogal interrupt enable register
+ * #define XGPIO_ISR_OFFSET	0x120 < Interrupt status register
+ * #define XGPIO_IER_OFFSET	0x128 < Interrupt enable register
+ *
  * */
 
  #include <linux/init.h>          /* needed for module_init and exit */
@@ -22,7 +32,7 @@
  #include <linux/of_address.h>
  #include <linux/of_device.h>
  #include <linux/of_platform.h>
- #include <asm/io.h>
+ #include <asm/io.h>               /* iowrite32() and company */
  #include <linux/ioport.h>         /* I/O port allocation request_resource(...) */
 
  #include "LED_01.h"
@@ -32,7 +42,7 @@
  unsigned int LED_01_nr_devs = 1;
  unsigned long long read_times = 0;
  unsigned long long write_times = 0;
- unsigned long LED_num_ports = 32;
+ u32 LED_value = 7;
 
  struct LED_01_dev *LED_01_devices;	/* allocated in LED_01_init_module */
 
@@ -66,15 +76,31 @@
 
      PDEBUG("LED: Physical address to resource is %x\n", (unsigned int) res.start);
 
-     //platform_get_resource(op, IORESOURCE_MEM, 0);
-     //request_mem_region(res.start, resource_size(led_brightness_dev->mem), pdev->name);
-     base_addr = ioremap(res.start, 0x10000);
-     __raw_writel(1,base_addr);
-     return 0; /* Success */
+    //  //platform_get_resource(op, IORESOURCE_MEM, 0);
+    //  //request_mem_region(res.start, resource_size(led_brightness_dev->mem), pdev->name);
+    //  base_addr = ioremap(res.start, 0x10000);
+    //  __raw_writel(1,base_addr);
+    struct resource* mem_region_requested = request_mem_region(res.start,0x10000,"LED_01");
+    if(mem_region_requested == NULL){
+        printk(KERN_WARNING "[LEO] LED: Failed request_mem_region(res.start,0x10000,...);\n");
+    }
+    else
+        PDEBUG(" [+] request_mem_region\n");
+
+    void* addr_tmp = ioremap(res.start,0x10000);
+
+    // value_read = ioread32(addr_tmp);
+    iowrite32(0,addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
+    iowrite32(LED_value , addr_tmp); /* Set output LED 1 and 4 (binary of decimal 8) */
+    PDEBUG(" [+] LED array written : %u \n", LED_value);
+
+    return 0; /* Success */
  }
 
  static int LED_of_remove(struct platform_device *op)
  {
+     release_mem_region(res.start,0x10000);
+     PDEBUG(" [+] release_mem_region \n");
      return 0; /* Success */
  }
 

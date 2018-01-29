@@ -4,6 +4,7 @@
 #
 # source /opt/Xilinx/SDK/2017.1/settings64.sh
 # export KERNELDIR=/home/embedded/zynq/repos/linux-xlnx/
+# export KERNELDIR=/home/leonardo/Documents/LDD3/pynq_OS/linux-xlnx/
 # export ARCH=arm
 # export CROSS_COMPILE=/opt/Xilinx/SDK/2017.1/gnu/arm/lin/bin/arm-xilinx-linux-gnueabi-
 
