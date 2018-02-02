@@ -222,13 +222,35 @@ ssize_t LED_01_read(struct file *filp, char __user *buf, size_t count, loff_t *f
 {
     ssize_t retval = 0;
     PDEBUG(" nothing to do when reading\n");
+
     return retval;
 }
 
 ssize_t LED_01_write(struct file *filp, const char __user *buf, size_t count, loff_t *f_pos)
 {
-    ssize_t retval = 0;
-    PDEBUG(" nothing to do when reading\n");
+
+    int retval = 0;
+    PDEBUG(" reading from user space -> wrinting in kernel space\n");
+    //struct hello_dev *dev = filp->private_data;
+    if (count > COMMAND_MAX_LENGHT){
+        printk(KERN_WARNING "[LEO] LED_01: trying to write more than possible. Aborting write\n");
+        retval = -EFBIG;
+        goto out;
+    }
+    if (down_interruptible(&(LED_01_devices->sem_LED_01))){
+        printk(KERN_WARNING "[LEO] LED_01: Device was busy. Operation aborted\n");
+        return -ERESTARTSYS;
+    }
+    if (copy_from_user((void*)LED_01_devices-> LED_value, buf, count)) {
+        printk(KERN_WARNING "[LEO] LED_01: can't use copy_from_user. \n");
+        retval = -EPERM;
+        goto out_and_Vsem;
+    }
+    PDEBUG(" Value instert: %u \n", LED_01_devices-> LED_value);
+    out_and_Vsem:
+    write_times++;
+    up(&(LED_01_devices->sem_LED_01));
+    out:
     return retval;
 }
 

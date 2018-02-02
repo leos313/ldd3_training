@@ -63,4 +63,6 @@ struct LED_01_dev {
 #define LED_DIRECTION_OUTPUT (0)
 #define LED_DIRECTION_INPUT (1)
 
+#define COMMAND_MAX_LENGHT (1)
+
 #endif /* _COMMANDS_H_ */
