@@ -78,9 +78,12 @@ The folders are divided per chapter and, in every one of them, there should be a
 9. CHAPTER_09: **Communicating with Hardware**
     1. LED_01: the aim of this driver will be to turn on/off a LED using *ioctl(...)* system call.
         * Just compile the test files ON.c, OFF.c and QUERY.c to test the device driver. With this TEST you will use the *ioctl(..)* system call
-        * If you compile and use BLINDING.c you will use the system call *write(...)* to turn on and off the led. The function *read()* is implemented but does nothing useful so far. 
+        * If you compile and use BLINDING.c you will use the system call *write(...)* to turn on and off the led. The function *read()* is implemented but does nothing useful so far.
         * For getting the resource, please read [this link](http://xillybus.com/tutorials/device-tree-zynq-4).
             * added the function `resource_size(...)` instead of inserting manually the size of the memory area.
+10. CHAPTER_10: **Interrupt Handling**
+    * cat /proc/interrupts
+    * cat /proc/stat
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
