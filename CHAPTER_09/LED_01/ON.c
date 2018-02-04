@@ -1,9 +1,9 @@
- /* ioctl_01test.c
+ /* ON.c
  *
  * Author  :  Leonardo Suriano<leonardo.suriano@live.it>
  *
  *
- * To compile the file: arm-xilinx-linux-gnueabi-gcc -O -g -DLEO_DEBUG test_LED_01.c -o test_LED_01.elf
+ * To compile the file: arm-xilinx-linux-gnueabi-gcc -O -g -DLEO_DEBUG ON.c -o ON
  *
  */
 #include <unistd.h>

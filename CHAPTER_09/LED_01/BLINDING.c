@@ -1,9 +1,9 @@
-/* OFF.c
+/* BLINDING.c
 *
 * Author  :  Leonardo Suriano<leonardo.suriano@live.it>
 *
 *
-* To compile the file: arm-xilinx-linux-gnueabi-gcc -O -g -DLEO_DEBUG OFF.c -o OFF
+* To compile the file: /opt/Xilinx/SDK/2017.1/gnu/arm/lin/bin/arm-xilinx-linux-gnueabi-gcc -O -g -DLEO_DEBUG BLINDING.c -o BLINDING
 *
 */
 #include <unistd.h>
@@ -35,16 +35,32 @@ int main() {
        printf("file opend\n");
    }
 
-   /* TURN ON LED */
 
-   int value_ioctl = ioctl(fd,LED_TURN_OFF);
-   if (value_ioctl < 0){
-     printf("value_ioctl : %d\n", value_ioctl);
-     printf(" %s\n", strerror(errno));
+   unsigned int ON_VALUE[1],i=0,OFF_VALUE[1];
+   ON_VALUE[0]=1;
+   OFF_VALUE[0]=0;
+   while(i<20){
+       // ON
+       result = write(fd, (void*) ON_VALUE, 1);
+       if ( result != 0 ){
+           printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
+       }
+       else{
+           printf("write operation executed succesfully (%u)\n",ON_VALUE[0]);
+       }
+       sleep(1);
+       // OFF
+
+       result = write(fd, (void*) OFF_VALUE, 1);
+       if ( result != 0 ){
+           printf("Oh dear, something went wrong with write()! %s\n", strerror(errno));
+       }
+       else{
+           printf("write operation executed succesfully (%u)\n",OFF_VALUE[0]);
+       }
+       sleep(1);
+
    }
-
-
-
 
 
 

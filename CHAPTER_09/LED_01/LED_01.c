@@ -133,6 +133,45 @@
  }
 
  /*
+  * Defining two function: turn_on_led and turn_off_led.
+  * They are UNSAFE: please use semaphore/mutex or spinlock when using this function.
+  * This functions use shared resources (both variables and hw) and this can cause race-condition
+  *
+  */
+
+  // void turn_on_led(void)
+  // {
+  //   LED_01_devices->LED_value=1;
+  //   LED_01_devices->addr_tmp = ioremap(LED_01_devices->res.start,resource_size(&(LED_01_devices->res)));
+  //   iowrite32(LED_DIRECTION_OUTPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
+  //   iowrite32(LED_01_devices->LED_value , LED_01_devices->addr_tmp); /* Set output LED 1  */
+  //   iounmap(LED_01_devices->addr_tmp);
+  //   PDEBUG(" [+] LED is now ON : %u \n", LED_01_devices->LED_value);
+  //   return;
+  // }
+  //
+  // void turn_off_led(void)
+  // {
+  //   LED_01_devices->LED_value=0;
+  //   LED_01_devices->addr_tmp = ioremap(LED_01_devices->res.start,resource_size(&(LED_01_devices->res)));
+  //   iowrite32(LED_DIRECTION_OUTPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
+  //   iowrite32(LED_01_devices->LED_value , LED_01_devices->addr_tmp); /* Set output LED 1 and 4 (binary of decimal 8) */
+  //   iounmap(LED_01_devices->addr_tmp);
+  //   PDEBUG(" [+] LED is now OFF : %u \n", LED_01_devices->LED_value);
+  //   return;
+  // }
+
+  void write_status_to_LED(void)
+  {
+    LED_01_devices->addr_tmp = ioremap(LED_01_devices->res.start,resource_size(&(LED_01_devices->res)));
+    iowrite32(LED_DIRECTION_OUTPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
+    iowrite32(LED_01_devices->LED_value , LED_01_devices->addr_tmp); /* Set output LED 1 and 4 (binary of decimal 8) */
+    iounmap(LED_01_devices->addr_tmp);
+    PDEBUG(" [+] write status : (%u) to the LED \n", LED_01_devices->LED_value);
+    return;
+  }
+
+ /*
   * The ioctl() implementation
   */
 
@@ -176,9 +215,7 @@
         return -ERESTARTSYS;
     }
     LED_01_devices->LED_value=1;
-    LED_01_devices->addr_tmp = ioremap(LED_01_devices->res.start,resource_size(&(LED_01_devices->res)));
-    iowrite32(LED_DIRECTION_OUTPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
-    iowrite32(LED_01_devices->LED_value , LED_01_devices->addr_tmp); /* Set output LED 1  */
+    write_status_to_LED();
     PDEBUG(" [+] LED is now ON : %u \n", LED_01_devices->LED_value);
 
     up(&(LED_01_devices->sem_LED_01));
@@ -191,9 +228,7 @@
         return -ERESTARTSYS;
     }
     LED_01_devices->LED_value=0;
-    LED_01_devices->addr_tmp = ioremap(LED_01_devices->res.start,resource_size(&(LED_01_devices->res)));
-    iowrite32(LED_DIRECTION_OUTPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
-    iowrite32(LED_01_devices->LED_value , LED_01_devices->addr_tmp); /* Set output LED 1 and 4 (binary of decimal 8) */
+    write_status_to_LED();
     PDEBUG(" [+] LED is now OFF : %u \n", LED_01_devices->LED_value);
 
     up(&(LED_01_devices->sem_LED_01));
@@ -207,6 +242,7 @@
     iowrite32(LED_DIRECTION_INPUT,LED_01_devices->addr_tmp + XGPIO_TRI_OFFSET); /* Set output directio */
     up(&(LED_01_devices->sem_LED_01));
     value_read = ioread32(LED_01_devices->addr_tmp);
+    iounmap(LED_01_devices->addr_tmp);
     PDEBUG(" LED_QUERY value_read: %d \n",value_read);
     return value_read;
     break;
@@ -241,12 +277,15 @@ ssize_t LED_01_write(struct file *filp, const char __user *buf, size_t count, lo
         printk(KERN_WARNING "[LEO] LED_01: Device was busy. Operation aborted\n");
         return -ERESTARTSYS;
     }
-    if (copy_from_user((void*)LED_01_devices-> LED_value, buf, count)) {
+    if (copy_from_user((void*)&(LED_01_devices-> LED_value), buf, count)) {
         printk(KERN_WARNING "[LEO] LED_01: can't use copy_from_user. \n");
         retval = -EPERM;
         goto out_and_Vsem;
     }
+    write_status_to_LED();
     PDEBUG(" Value instert: %u \n", LED_01_devices-> LED_value);
+
+
     out_and_Vsem:
     write_times++;
     up(&(LED_01_devices->sem_LED_01));
