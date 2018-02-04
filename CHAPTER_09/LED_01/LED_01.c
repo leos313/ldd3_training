@@ -284,7 +284,7 @@ ssize_t LED_01_write(struct file *filp, const char __user *buf, size_t count, lo
     }
     write_status_to_LED();
     PDEBUG(" Value instert: %u \n", LED_01_devices-> LED_value);
-
+    retval = (int)count; //incase of success .write MUST return the count value
 
     out_and_Vsem:
     write_times++;
