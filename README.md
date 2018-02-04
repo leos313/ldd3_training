@@ -77,6 +77,7 @@ The folders are divided per chapter and, in every one of them, there should be a
     2. test_gpio_userspace: using mmap I can access directly to the hardware (with NO device driver). Within the C-file there are the right command to turn on/off the Leds on Pynq board and to read the button/switch of the board. It assumes that you have created a Vivado project with GPIO with the right address map. See the [blog's page](http://fpga.org/2013/05/28/how-to-design-and-access-a-memory-mapped-device-part-two/)
 9. CHAPTER_09: **Communicating with Hardware**
     1. LED_01: the aim of this driver will be to turn on/off a LED using ioctl(...) system call.
+        *Just compile the test files ON.c, OFF.c and QUERY.c to test the device driver.
         * For getting the resource, please read [this link](http://xillybus.com/tutorials/device-tree-zynq-4).
             * added the function `resource_size(...)` instead of inserting manually the size of the memory area.
 
