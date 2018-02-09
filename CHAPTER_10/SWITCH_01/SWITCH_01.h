@@ -37,8 +37,8 @@
 #define XGPIO_IER_OFFSET	  0x128  /* < Interrupt enable register*/
 
 struct SWITCH_01_dev {
+  int irq_line;     /* interrupt line used by the SW */
   u32 SWITCH_value;
-  struct resource res;           /* to store platform info */
   struct resource* temp_res;           /* to store platform info */
   struct resource* mem_region_requested;
   void* addr_tmp;

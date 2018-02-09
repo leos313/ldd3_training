@@ -459,6 +459,7 @@
 			gpio-controller;
 			interrupt-controller;
 			interrupt-parent = <0x4>;
+			//interrupt-parent =<&gic>;
 			interrupts = <0x0 0x1d 0x4>;
 			reg = <0x41210000 0x10000>;
 			xlnx,all-inputs = <0x1>;

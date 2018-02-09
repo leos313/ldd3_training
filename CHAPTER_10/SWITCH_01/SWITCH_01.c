@@ -34,6 +34,8 @@
  #include <linux/of_platform.h>
  #include <asm/io.h>               /* iowrite32() and company */
  #include <linux/ioport.h>         /* I/O port allocation request_resource(...), resource_size(..) */
+ #include <linux/interrupt.h>      /* Interrupt functions */
+ #include <linux/of_irq.h>  /* irq_of_parse_and_map */
 
  #include "SWITCH_01.h"
 
@@ -61,11 +63,16 @@
  unsigned long *base_addr; /* Virtual Base Address */
  /* platform device structures */
 
+ irqreturn_t SWITCH_01_interrupt(int irq, void *dev_id)
+{
+    printk(KERN_ALERT "NOTHING TO DO WITH THE INTERRUPT\n");
+    return IRQ_HANDLED;
+}
+
 
  static int SWITCH_of_probe(struct platform_device *pdev)
  {
-     int irq = -1;
-     int ret;
+     int ret=0;
 
  	   SWITCH_01_devices->temp_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	   if (!(SWITCH_01_devices->temp_res)) {
@@ -73,29 +80,23 @@
  	   	return -ENXIO;
  	   }
 
-           printk("TRY resource : regs.start=%#x,regs.end=%#x\n",SWITCH_01_devices->temp_res->start,SWITCH_01_devices->temp_res->end);
+     PDEBUG("resource : regs.start=%#x,regs.end=%#x\n",SWITCH_01_devices->temp_res->start,SWITCH_01_devices->temp_res->end);
 
- 	   irq = platform_get_irq(pdev, 0);
- 	   if (irq < 0) {
- 	   	dev_err(&pdev->dev, "TRY could not get IRQ\n");
-      printk(KERN_ALERT "TRY could not get IRQ\n");
-
- 	   	return irq;
+ 	   //SWITCH_01_devices->irq_line = platform_get_irq(pdev, 0);
+     SWITCH_01_devices->irq_line = irq_of_parse_and_map(pdev->dev.of_node, 0);
+ 	   if (SWITCH_01_devices->irq_line < 0) {
+ 	       dev_err(&pdev->dev, "could not get IRQ\n");
+         printk(KERN_ALERT "could not get IRQ\n");
+ 	       return SWITCH_01_devices->irq_line;
  	   }
-            printk("TRY resource : irq=%d\n",irq);
+     PDEBUG("resource : irq=%#x\n",SWITCH_01_devices->irq_line);
+     ret = request_irq(29, SWITCH_01_interrupt, IRQF_SHARED	, DRIVER_NAME, NULL);
+     if (ret) {
+        printk(KERN_ALERT "SWITCH_01: can't get assigned irq %i, ret= %d\n", SWITCH_01_devices->irq_line, ret);
+        SWITCH_01_devices->irq_line = -1;
+    }
 
      //printk("TRY resource : num_clock=%d\n", pdev->dev.platform_data.num_clock);
-
-
-     /* What I normally do */
-     ret = of_address_to_resource(pdev->dev.of_node, 0, &(SWITCH_01_devices->res));
-     if (ret) {
-         printk(KERN_WARNING "[LEO] SWITCH: FaiSWITCH to obtain device tree resource\n");
-         return ret;
-     }
-
-     PDEBUG("SWITCH: Physical address to resource is %x\n", (unsigned int) SWITCH_01_devices->res.start);
-     PDEBUG("SWITCH: size of resource is %x\n", (unsigned int) resource_size(&(SWITCH_01_devices->res)));
 
 
      SWITCH_01_devices->mem_region_requested = request_mem_region((SWITCH_01_devices->temp_res->start),resource_size(SWITCH_01_devices->temp_res),"SWITCH_01");
@@ -112,6 +113,7 @@
  {
      release_mem_region((SWITCH_01_devices->temp_res->start),resource_size(SWITCH_01_devices->temp_res));
      PDEBUG(" [+] release_mem_region \n");
+     free_irq(SWITCH_01_devices->irq_line, NULL);
      return 0; /* Success */
  }
 
