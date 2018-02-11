@@ -69,11 +69,33 @@
     return IRQ_HANDLED;
 }
 
+// #define XGPIO_GIE_OFFSET	  0x11C  /* < Glogal interrupt enable register*/
+// #define XGPIO_IER_OFFSET	  0x128  /* < Interrupt enable register*/
+
+void enabling_interrupt_SWITCH_01(void)
+{
+  u32 value_read = 139;
+  SWITCH_01_devices->addr_tmp = ioremap(SWITCH_01_devices->temp_res->start,resource_size(SWITCH_01_devices->temp_res));
+  value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET);
+  PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
+  value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: %d \n",value_read);
+  iowrite32(0xffff,SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET); /* Glogal interrupt enable register */
+  iowrite32(0xffff,SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET); /* Interrupt enable register */
+
+  value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET);
+  PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
+  value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: %d \n",value_read);
+  iounmap(SWITCH_01_devices->addr_tmp);
+  PDEBUG(" [+] Enabled Interrupt SWITCH_01 \n");
+  return;
+}
+
 
  static int SWITCH_of_probe(struct platform_device *pdev)
  {
      int ret=0;
-
  	   SWITCH_01_devices->temp_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
  	   if (!(SWITCH_01_devices->temp_res)) {
  	   	dev_err(&pdev->dev, "TRY could not get IO memory\n");
@@ -84,19 +106,22 @@
 
  	   //SWITCH_01_devices->irq_line = platform_get_irq(pdev, 0);
      SWITCH_01_devices->irq_line = irq_of_parse_and_map(pdev->dev.of_node, 0);
+     //SWITCH_01_devices->irq_line = 29 + 32;
  	   if (SWITCH_01_devices->irq_line < 0) {
  	       dev_err(&pdev->dev, "could not get IRQ\n");
          printk(KERN_ALERT "could not get IRQ\n");
  	       return SWITCH_01_devices->irq_line;
  	   }
-     PDEBUG("resource : irq=%#x\n",SWITCH_01_devices->irq_line);
-     ret = request_irq(29, SWITCH_01_interrupt, IRQF_SHARED	, DRIVER_NAME, NULL);
-     if (ret) {
-        printk(KERN_ALERT "SWITCH_01: can't get assigned irq %i, ret= %d\n", SWITCH_01_devices->irq_line, ret);
-        SWITCH_01_devices->irq_line = -1;
-    }
 
-     //printk("TRY resource : num_clock=%d\n", pdev->dev.platform_data.num_clock);
+     PDEBUG(" resource VIRTUAL IRQ NUMBER : irq=%#x\n",SWITCH_01_devices->irq_line);
+     ret = request_irq((SWITCH_01_devices->irq_line), SWITCH_01_interrupt, IRQF_PROBE_SHARED	, DRIVER_NAME, NULL);
+     if (ret) {
+        printk(KERN_ALERT "NEW SWITCH_01: can't get assigned irq %i, ret= %d\n", SWITCH_01_devices->irq_line, ret);
+        SWITCH_01_devices->irq_line = -1;
+     }
+     else
+        PDEBUG(" OK  request_irq: irq=%#x\n",SWITCH_01_devices->irq_line);
+
 
 
      SWITCH_01_devices->mem_region_requested = request_mem_region((SWITCH_01_devices->temp_res->start),resource_size(SWITCH_01_devices->temp_res),"SWITCH_01");
@@ -106,6 +131,7 @@
      else
          PDEBUG(" [+] request_mem_region\n");
 
+     enabling_interrupt_SWITCH_01();
      return 0; /* Success */
  }
 

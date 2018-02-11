@@ -84,6 +84,7 @@ The folders are divided per chapter and, in every one of them, there should be a
 10. CHAPTER_10: **Interrupt Handling**
     * cat /proc/interrupts
     * cat /proc/stat
+    * [Standalone interrupt on Zynq](https://github.com/ama142/Zynq-SoC-Training/blob/master/lab4/Source%20Code/lab4.c)
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
