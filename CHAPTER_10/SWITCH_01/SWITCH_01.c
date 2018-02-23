@@ -80,8 +80,9 @@ void enabling_interrupt_SWITCH_01(void)
   PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
   PDEBUG(" XGPIO_IER_OFFSET value_read: %d \n",value_read);
-  iowrite32(0xffff,SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET); /* Glogal interrupt enable register */
-  iowrite32(0xffff,SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET); /* Interrupt enable register */
+
+  iowrite32(XGPIO_IR_CH1_MASK,SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET); /* Interrupt enable register */
+  iowrite32(XGPIO_GIE_GINTR_ENABLE_MASK,SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET); /* Glogal interrupt enable register */
 
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET);
   PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
