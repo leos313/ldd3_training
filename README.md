@@ -85,6 +85,7 @@ The folders are divided per chapter and, in every one of them, there should be a
     * cat /proc/interrupts
     * cat /proc/stat
     * [Standalone interrupt on Zynq](https://github.com/ama142/Zynq-SoC-Training/blob/master/lab4/Source%20Code/lab4.c)
+    1. SWITCH_01: in the reality I am working with buttons and not with switches. In this example I enable the interrupts in Linux, I setup the hardware in order to trigger an interrupt and we can go inside the function _SWITCH_01_interrupt()_ that is our interrupt handler. 
 
 
 [1]: https://free-electrons.com/doc/books/ldd3.pdf
