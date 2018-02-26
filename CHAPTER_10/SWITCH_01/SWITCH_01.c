@@ -63,36 +63,61 @@
  unsigned long *base_addr; /* Virtual Base Address */
  /* platform device structures */
 
- irqreturn_t SWITCH_01_interrupt(int irq, void *dev_id)
-{
-    printk(KERN_ALERT "NOTHING TO DO WITH THE INTERRUPT\n");
-    return IRQ_HANDLED;
-}
-
 // #define XGPIO_GIE_OFFSET	  0x11C  /* < Glogal interrupt enable register*/
 // #define XGPIO_IER_OFFSET	  0x128  /* < Interrupt enable register*/
 
 void enabling_interrupt_SWITCH_01(void)
 {
-  u32 value_read = 139;
-  SWITCH_01_devices->addr_tmp = ioremap(SWITCH_01_devices->temp_res->start,resource_size(SWITCH_01_devices->temp_res));
+  u32 value_read;
+  // SWITCH_01_devices->addr_tmp = ioremap(SWITCH_01_devices->temp_res->start,resource_size(SWITCH_01_devices->temp_res));
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET);
-  PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
+  PDEBUG(" XGPIO_GIE_OFFSET value_read: 0x%08x \n",value_read);
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
-  PDEBUG(" XGPIO_IER_OFFSET value_read: %d \n",value_read);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: 0x%08x \n",value_read);
 
   iowrite32(XGPIO_IR_CH1_MASK,SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET); /* Interrupt enable register */
   iowrite32(XGPIO_GIE_GINTR_ENABLE_MASK,SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET); /* Glogal interrupt enable register */
 
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_GIE_OFFSET);
-  PDEBUG(" XGPIO_GIE_OFFSET value_read: %d \n",value_read);
+  PDEBUG(" XGPIO_GIE_OFFSET value_read: 0x%08x \n",value_read);
   value_read = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
-  PDEBUG(" XGPIO_IER_OFFSET value_read: %d \n",value_read);
-  iounmap(SWITCH_01_devices->addr_tmp);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: 0x%08x \n",value_read);
+  // iounmap(SWITCH_01_devices->addr_tmp);
   PDEBUG(" [+] Enabled Interrupt SWITCH_01 \n");
   return;
 }
 
+void disabling_interrupt_SWITCH_01(void)
+{
+  u32 value_read_IER;
+  u32 value_read_ISR;
+  // SWITCH_01_devices->addr_tmp = ioremap(SWITCH_01_devices->temp_res->start,resource_size(SWITCH_01_devices->temp_res));
+
+  value_read_IER = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: 0x%08x \n",value_read_IER);
+  value_read_ISR = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_ISR_OFFSET);
+  PDEBUG(" XGPIO_ISR_OFFSET value_read: 0x%08x \n",value_read_ISR);
+
+  iowrite32(value_read_IER & (~XGPIO_IR_CH1_MASK),SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET); /* Interrupt enable register */
+  iowrite32(value_read_ISR & XGPIO_IR_CH1_MASK ,SWITCH_01_devices->addr_tmp + XGPIO_ISR_OFFSET);
+
+  value_read_ISR = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_ISR_OFFSET);
+  PDEBUG(" XGPIO_ISR_OFFSET value_read: 0x%08x \n",value_read_ISR);
+  value_read_IER = ioread32(SWITCH_01_devices->addr_tmp + XGPIO_IER_OFFSET);
+  PDEBUG(" XGPIO_IER_OFFSET value_read: 0x%08x \n",value_read_IER);
+  // iounmap(SWITCH_01_devices->addr_tmp);
+  PDEBUG(" [+] Disabled Interrupt SWITCH_01 \n");
+  return;
+}
+
+irqreturn_t SWITCH_01_interrupt(int irq, void *dev_id)
+{
+   disabling_interrupt_SWITCH_01();
+   SWITCH_01_devices->N_interrupts++;
+   printk(KERN_ALERT "\n NOTHING TO DO WITH THE INTERRUPT : %u \n",SWITCH_01_devices->N_interrupts);
+   enabling_interrupt_SWITCH_01();
+   return IRQ_HANDLED;
+}
 
  static int SWITCH_of_probe(struct platform_device *pdev)
  {
@@ -131,13 +156,17 @@ void enabling_interrupt_SWITCH_01(void)
      }
      else
          PDEBUG(" [+] request_mem_region\n");
-
+     /* mapping physical address into virtual address of kernel space: */
+     SWITCH_01_devices->addr_tmp = ioremap(SWITCH_01_devices->temp_res->start,resource_size(SWITCH_01_devices->temp_res));
+     SWITCH_01_devices->N_interrupts = 0;
      enabling_interrupt_SWITCH_01();
      return 0; /* Success */
  }
 
  static int SWITCH_of_remove(struct platform_device *op)
  {
+     /* remove the mapping of physical address into the virtual address kernel space */
+     iounmap(SWITCH_01_devices->addr_tmp);
      release_mem_region((SWITCH_01_devices->temp_res->start),resource_size(SWITCH_01_devices->temp_res));
      PDEBUG(" [+] release_mem_region \n");
      free_irq(SWITCH_01_devices->irq_line, NULL);

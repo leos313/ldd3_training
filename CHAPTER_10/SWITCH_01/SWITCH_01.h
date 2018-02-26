@@ -73,6 +73,7 @@
 
 struct SWITCH_01_dev {
   int irq_line;     /* interrupt line used by the SW */
+  u32 N_interrupts;
   u32 SWITCH_value;
   struct resource* temp_res;           /* to store platform info */
   struct resource* mem_region_requested;
