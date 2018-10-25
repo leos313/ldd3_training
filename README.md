@@ -4,6 +4,8 @@
 
 I am writing these sample codes for a **personal reason**: I really want to learn how to write (correctly!) Linux device drivers.
 
+Note that, in order to try all examples, you need a Linux-based OS running on a PYNQ board (or something equivalent/similar: a dual core ARM + an FPGA). **[the tcl scripts to create the hw for the FPGA are coming soon. For more details, send me an email]**
+
 In order to achieve this goal, the best source/documentation is, of course, the famous [Linux Device Drivers 3rd edition][1] (a.k.a *ldd3*) by Jonathan Corbet, Alessandro Rubini, and Greg Kroah-Hartman. Reading the book (normally every engineering book) is not enough to deeply understand the topic: the best way is almost always to directly try what you read. This is exactly what I am doing: step by step I try to implement the new acquired concepts.
 
 The folders are divided per chapter and, in every one of them, there should be at least one example where the newly learned techniques were applied. I am sure the code it is not so clean, can be improved, it is not optimized and so on and so forth: I will try to improve my coding skills with these exercises.
